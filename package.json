@@ -1,0 +1,46 @@
+{
+  "name": "clinical-trial-stats",
+  "version": "0.1.0",
+  "description": "Clinical trial statistics library | 临床试验统计计算库",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./core/*": "./src/core/*",
+    "./sample-size/*": "./src/sample-size/*",
+    "./result-validation/*": "./src/result-validation/*",
+    "./ci-estimation/*": "./src/ci-estimation/*",
+    "./sensitivity/*": "./src/sensitivity/*"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": [
+    "clinical-trial",
+    "sample-size",
+    "statistics",
+    "biostatistics",
+    "hypothesis-testing",
+    "confidence-interval",
+    "non-inferiority",
+    "superiority",
+    "equivalence",
+    "TOST",
+    "McNemar",
+    "Wilson-score",
+    "Farrington-Manning",
+    "effect-size",
+    "Cohen-d",
+    "sensitivity-analysis"
+  ],
+  "author": "lihengjun",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lihengjun/clinical-trial-stats.git"
+  },
+  "devDependencies": {
+    "vitest": "^3.0.0"
+  }
+}
