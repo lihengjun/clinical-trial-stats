@@ -34,7 +34,10 @@
     "Cohen-d",
     "sensitivity-analysis"
   ],
-  "author": "lihengjun",
+  "author": "李恒骏 (lihj.net)",
+  "contributors": [
+    "Claude Code (Anthropic)"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
