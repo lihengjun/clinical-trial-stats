@@ -40,7 +40,7 @@ function calculateOneSampleResult(n, s, p0, alpha, useContinuity) {
       ci_lower: 0,
       ci_upper: 0,
       p_value: 1,
-      z_score: 0,
+      testStatistic: 0,
       isNonInferior: false
     }
   }
@@ -56,7 +56,7 @@ function calculateOneSampleResult(n, s, p0, alpha, useContinuity) {
       ci_lower: 0,
       ci_upper: 0,
       p_value: 1,
-      z_score: 0,
+      testStatistic: 0,
       isNonInferior: false
     }
   }
@@ -76,8 +76,12 @@ function calculateOneSampleResult(n, s, p0, alpha, useContinuity) {
     ci_lower,
     ci_upper,
     p_value,
-    z_score,
-    isNonInferior: ci_lower > p0 // 拒绝原假设 = CI下限 > p0
+    testStatistic: z_score,
+    isNonInferior: ci_lower > p0, // 拒绝原假设 = CI下限 > p0
+    // P0-3.0: 检验统计量元数据
+    testStatisticType: 'Z',
+    df: null,
+    testStatisticLabel: `Z = ${z_score.toFixed(2)}`
   }
 }
 
@@ -100,7 +104,7 @@ function calculateOneSampleResultContinuous(n, mean, sd, mu0, alpha) {
       ci_lower: 0,
       ci_upper: 0,
       p_value: 1,
-      t_score: 0,
+      testStatistic: 0,
       isNonInferior: false
     }
   }
@@ -114,7 +118,7 @@ function calculateOneSampleResultContinuous(n, mean, sd, mu0, alpha) {
       ci_lower: 0,
       ci_upper: 0,
       p_value: 1,
-      t_score: 0,
+      testStatistic: 0,
       isNonInferior: false
     }
   }
@@ -125,6 +129,7 @@ function calculateOneSampleResultContinuous(n, mean, sd, mu0, alpha) {
   const t_score = safeDivide(diff, se, 0)
   const p_value = 1 - normalCDF(t_score)
 
+  const df = n - 1
   return {
     mean,
     mu0,
@@ -132,8 +137,12 @@ function calculateOneSampleResultContinuous(n, mean, sd, mu0, alpha) {
     ci_lower,
     ci_upper,
     p_value,
-    t_score,
-    isNonInferior: ci_lower > mu0 // 拒绝原假设 = CI下限 > mu0
+    testStatistic: t_score,
+    isNonInferior: ci_lower > mu0, // 拒绝原假设 = CI下限 > mu0
+    // P0-3.0: 检验统计量元数据
+    testStatisticType: 't',
+    df,
+    testStatisticLabel: `t(${df}) = ${t_score.toFixed(2)}`
   }
 }
 

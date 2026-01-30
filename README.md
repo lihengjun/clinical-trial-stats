@@ -12,6 +12,10 @@
 - **效应量** — 连续终点 Cohen's d、率终点 Cohen's h（反正弦变换）
 - **敏感性分析** — 参数扫描，观察样本量随参数变化的趋势
 - **双终点支持** — 每种方法均支持率终点和连续终点
+- **效能反推** — 给定样本量反推检验效能 (Power)
+- **最小可检测效应量 (MDE)** — 给定样本量反推最小可检测差异
+- **诊断试验** — 敏感性/特异性精度估计与比较，支持患病率校正
+- **相关性分析** — Pearson 相关系数检验样本量 (Fisher Z 变换)
 - **零依赖** — 纯 JavaScript，可运行于 Node.js、浏览器或任何 JS 环境
 
 ## 开发进度
@@ -36,6 +40,12 @@
 | 效应量 (Cohen's d / h) | ✅ | ✅ | ✅ | — |
 | 敏感性分析 | ✅ | ✅ | 🔲 | — |
 | 内部依赖：正态分布函数、浮点精度处理 | — | — | ✅ | — |
+| **效能分析** | | | | |
+| 效能反推 (两组/单组/配对) | ✅ | ✅ | ✅ | — |
+| 最小可检测效应量 MDE | ✅ | ✅ | ✅ | — |
+| **专项设计** | | | | |
+| 诊断试验 (敏感性/特异性) | ✅ | — | ✅ | — |
+| 相关性分析 (Fisher Z) | — | — | ✅ | — |
 
 ✅ 已完成 &emsp; 🔲 待补充 &emsp; **对照验证**：用于交叉验证的第三方软件（如 R、SAS、PASS），每完成一项正式测试后更新
 
@@ -68,6 +78,27 @@ const sup = calculateSupSampleSize(0.70, 0.85, 0.025, 0.8, 1)
 // 两组均为: 30%, 等效界值: 5%, Alpha: 2.5%, 效能: 80%
 const eq = calculateEqSampleSize(0.3, 0.3, 0.05, 0.025, 0.8, 1)
 // => { n1: 832, n2: 832 }
+```
+
+```javascript
+import { calculatePower, calculateDiagnosticSampleSize } from 'clinical-trial-stats'
+
+// 效能反推：已有 200 例，能达到多少效能？
+const pw = calculatePower({
+  designType: 'two-group',
+  studyType: 'non-inferiority',
+  endpointType: 'proportion',
+  n1: 200, p1: 0.85, p2: 0.85,
+  delta: 0.1, alpha: 0.025, ratio: 1
+})
+// => { power: 0.63, z_beta: 0.33 }
+
+// 诊断试验：评估敏感性 85%，精度 ±5%
+const dx = calculateDiagnosticSampleSize({
+  expectedValue: 0.85, precision: 0.05,
+  confidenceLevel: 0.95, measureType: 'sensitivity'
+})
+// => { n: 196, ... }
 ```
 
 ## API
@@ -125,6 +156,51 @@ const eq = calculateEqSampleSize(0.3, 0.3, 0.05, 0.025, 0.8, 1)
 | 函数 | 说明 |
 |------|------|
 | `runSensitivityAnalysis(mode, baseParams, config)` | 参数扫描分析 |
+
+### 效能反推 (Power Analysis)
+
+| 函数 | 说明 |
+|------|------|
+| `calculatePower({ designType, studyType, endpointType, n1, ... })` | 统一入口：反推检验效能 |
+| `calculatePowerNI(n1, p1, p2, delta, alpha, ratio)` | 两组非劣效，率终点 |
+| `calculatePowerSup(n1, p1, p2, alpha, ratio)` | 两组优效，率终点 |
+| `calculatePowerEq(n1, p1, p2, delta, alpha, ratio)` | 两组等效，率终点 |
+| `calculatePowerOneSample(n, p0, p1, alpha)` | 单组，率终点 |
+| `calculatePowerPaired(n, p10, p01, delta, alpha, studyType)` | 配对，率终点 |
+
+所有函数均有连续终点版本（函数名末尾加 `Continuous`）。
+
+返回：`{ power: number, z_beta: number }`
+
+### 最小可检测效应量 (MDE)
+
+| 函数 | 说明 |
+|------|------|
+| `calculateMDE({ designType, studyType, endpointType, n1, ... })` | 统一入口：反推最小可检测差异 |
+| `calculateMDE_NI(n1, p1, delta, alpha, power, ratio)` | 两组非劣效，率终点 |
+| `calculateMDE_Sup(n1, p1, alpha, power, ratio)` | 两组优效，率终点 |
+| `calculateMDE_Eq(n1, p1, p2, alpha, power, ratio)` | 两组等效，率终点 |
+| `calculateMDE_OneSample(n, p0, alpha, power)` | 单组，率终点 |
+| `calculateMDE_Paired(n, p10, delta, alpha, power, studyType)` | 配对，率终点 |
+
+所有函数均有连续终点版本（函数名末尾加 `Continuous`）。
+
+返回：`{ mde: number, converged: boolean, ... }`
+
+### 诊断试验 (Diagnostic Test)
+
+| 函数 | 说明 |
+|------|------|
+| `calculateDiagnosticSampleSize({ expectedValue, precision, confidenceLevel, measureType, prevalence })` | 敏感性/特异性精度估计 |
+| `calculateDiagnosticComparison({ p1, p2, alpha, power, alternative })` | 两组诊断性能比较 |
+
+### 相关性分析 (Correlation)
+
+| 函数 | 说明 |
+|------|------|
+| `calculateCorrelationSampleSize({ expectedR, alpha, power, alternative })` | 检验 ρ=0 |
+| `calculateCorrelationComparisonSampleSize({ r0, r1, alpha, power, alternative })` | 检验 ρ=ρ₀ |
+| `calculateCorrelationPower({ n, expectedR, alpha, alternative })` | 相关性效能反推 |
 
 ### 核心工具
 
@@ -215,6 +291,28 @@ $$n_i = \frac{(Z_{1-\alpha_{adj}} + Z_{1-\beta})^2 \cdot [p_0(1-p_0)/r_0 + p_i(1
 
 支持通过权重数组 `[r₀, r₁, r₂, ...]` 进行不等比例分配。
 
+### 效能反推
+
+效能为样本量公式的代数反解：
+
+$$\text{Power} = \Phi\left(\frac{\text{Effect Size} \times \sqrt{n}}{\text{SE}} - Z_{1-\alpha}\right)$$
+
+> Chow et al. (2017); Cohen (1988) Chapter 2
+
+### 诊断试验 (Wald 近似)
+
+$$n = \frac{Z^2 \cdot p(1-p)}{d^2}$$
+
+当提供患病率 (prevalence) 时，总样本量 $n_{total} = n / \text{prevalence}$。
+
+> Flahault et al. (2005); Buderer (1996)
+
+### 相关性分析 (Fisher Z 变换)
+
+$$n = \left(\frac{Z_{1-\alpha/2} + Z_{1-\beta}}{\frac{1}{2}\ln\frac{1+r}{1-r}}\right)^2 + 3$$
+
+> Fisher (1921); Cohen (1988) Chapter 3
+
 ### 置信区间
 
 **率（Wilson Score 法）：**
@@ -254,6 +352,11 @@ $$n = \left(\frac{Z \cdot \sigma}{w}\right)^2$$
 7. Farrington CP, Manning G. Test statistics and sample size formulae for comparative binomial trials with null hypothesis of non-zero risk difference or non-unity relative risk. *Stat Med*. 1990;9(12):1447-1454.
 8. Newcombe RG. Interval estimation for the difference between independent proportions. *Stat Med*. 1998;17(8):873-890.
 9. NMPA. 药物临床试验样本量估计指导原则 (2023).
+10. Cohen J. *Statistical Power Analysis for the Behavioral Sciences*. 2nd ed. Lawrence Erlbaum; 1988.
+11. Flahault A, Cadilhac M, Thomas G. Sample size calculation should be performed for design accuracy in diagnostic test studies. *J Clin Epidemiol*. 2005;58(8):859-862.
+12. Buderer NMF. Statistical methodology: I. Incorporating the prevalence of disease into the sample size calculation for sensitivity and specificity. *Acad Emerg Med*. 1996;3(9):895-900.
+13. Fisher RA. On the "probable error" of a coefficient of correlation deduced from a small sample. *Metron*. 1921;1:3-32.
+14. Lenth RV. Some practical guidelines for effective sample size determination. *Am Stat*. 2001;55(3):187-193.
 
 ## 算法审计
 

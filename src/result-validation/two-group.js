@@ -343,7 +343,7 @@ function calculateNIResult(n1, s1, n2, s2, delta, alpha, useContinuity, method) 
       ci_lower: 0,
       ci_upper: 0,
       p_value: 1,
-      z_score: 0,
+      testStatistic: 0,
       isNonInferior: false
     }
   }
@@ -408,7 +408,7 @@ function calculateNIResult(n1, s1, n2, s2, delta, alpha, useContinuity, method) 
         ci_lower: 0,
         ci_upper: 0,
         p_value: 1,
-        z_score: 0,
+        testStatistic: 0,
         isNonInferior: false
       }
     }
@@ -426,8 +426,12 @@ function calculateNIResult(n1, s1, n2, s2, delta, alpha, useContinuity, method) 
     ci_lower,
     ci_upper,
     p_value,
-    z_score,
-    isNonInferior: ci_lower > -delta
+    testStatistic: z_score,
+    isNonInferior: ci_lower > -delta,
+    // P0-3.0: 检验统计量元数据
+    testStatisticType: 'Z',
+    df: null,
+    testStatisticLabel: `Z = ${z_score.toFixed(2)}`
   }
 }
 
@@ -463,7 +467,7 @@ function calculateNIResultContinuous(n1, mean1, sd1, n2, mean2, sd2, delta, alph
       ci_lower: 0,
       ci_upper: 0,
       p_value: 1,
-      t_score: 0,
+      testStatistic: 0,
       isNonInferior: false
     }
   }
@@ -479,7 +483,7 @@ function calculateNIResultContinuous(n1, mean1, sd1, n2, mean2, sd2, delta, alph
       ci_lower: 0,
       ci_upper: 0,
       p_value: 1,
-      t_score: 0,
+      testStatistic: 0,
       isNonInferior: false
     }
   }
@@ -491,6 +495,7 @@ function calculateNIResultContinuous(n1, mean1, sd1, n2, mean2, sd2, delta, alph
   const t_score = safeDivide(diff + delta, se, 0)
   const p_value = 1 - normalCDF(t_score)
 
+  const df = n1 + n2 - 2
   return {
     mean1,
     mean2,
@@ -498,8 +503,12 @@ function calculateNIResultContinuous(n1, mean1, sd1, n2, mean2, sd2, delta, alph
     ci_lower,
     ci_upper,
     p_value,
-    t_score,
-    isNonInferior: ci_lower > -delta
+    testStatistic: t_score,
+    isNonInferior: ci_lower > -delta,
+    // P0-3.0: 检验统计量元数据
+    testStatisticType: 't',
+    df,
+    testStatisticLabel: `t(${df}) = ${t_score.toFixed(2)}`
   }
 }
 
@@ -540,7 +549,7 @@ function calculateSupResult(n1, s1, n2, s2, alpha, useContinuity, method) {
       ci_lower: 0,
       ci_upper: 0,
       p_value: 1,
-      z_score: 0,
+      testStatistic: 0,
       isNonInferior: false
     }
   }
@@ -597,7 +606,7 @@ function calculateSupResult(n1, s1, n2, s2, alpha, useContinuity, method) {
         ci_lower: 0,
         ci_upper: 0,
         p_value: 1,
-        z_score: 0,
+        testStatistic: 0,
         isNonInferior: false
       }
     }
@@ -615,8 +624,12 @@ function calculateSupResult(n1, s1, n2, s2, alpha, useContinuity, method) {
     ci_lower,
     ci_upper,
     p_value,
-    z_score,
-    isNonInferior: ci_lower > 0 // 优效成立 = CI下限 > 0
+    testStatistic: z_score,
+    isNonInferior: ci_lower > 0, // 优效成立 = CI下限 > 0
+    // P0-3.0: 检验统计量元数据
+    testStatisticType: 'Z',
+    df: null,
+    testStatisticLabel: `Z = ${z_score.toFixed(2)}`
   }
 }
 
@@ -643,7 +656,7 @@ function calculateSupResultContinuous(n1, mean1, sd1, n2, mean2, sd2, alpha) {
       ci_lower: 0,
       ci_upper: 0,
       p_value: 1,
-      t_score: 0,
+      testStatistic: 0,
       isNonInferior: false
     }
   }
@@ -657,7 +670,7 @@ function calculateSupResultContinuous(n1, mean1, sd1, n2, mean2, sd2, alpha) {
       ci_lower: 0,
       ci_upper: 0,
       p_value: 1,
-      t_score: 0,
+      testStatistic: 0,
       isNonInferior: false
     }
   }
@@ -668,6 +681,7 @@ function calculateSupResultContinuous(n1, mean1, sd1, n2, mean2, sd2, alpha) {
   const t_score = safeDivide(diff, se, 0)
   const p_value = 1 - normalCDF(t_score)
 
+  const df_sup = n1 + n2 - 2
   return {
     mean1,
     mean2,
@@ -675,8 +689,12 @@ function calculateSupResultContinuous(n1, mean1, sd1, n2, mean2, sd2, alpha) {
     ci_lower,
     ci_upper,
     p_value,
-    t_score,
-    isNonInferior: ci_lower > 0 // 优效成立 = CI下限 > 0
+    testStatistic: t_score,
+    isNonInferior: ci_lower > 0, // 优效成立 = CI下限 > 0
+    // P0-3.0: 检验统计量元数据
+    testStatisticType: 't',
+    df: df_sup,
+    testStatisticLabel: `t(${df_sup}) = ${t_score.toFixed(2)}`
   }
 }
 
@@ -724,7 +742,7 @@ function calculateEqResult(n1, s1, n2, s2, delta, alpha, useContinuity, method) 
       ci_lower: 0,
       ci_upper: 0,
       p_value: 1,
-      z_score: 0,
+      testStatistic: 0,
       isNonInferior: false
     }
   }
@@ -745,7 +763,7 @@ function calculateEqResult(n1, s1, n2, s2, delta, alpha, useContinuity, method) 
         ci_lower: 0,
         ci_upper: 0,
         p_value: 1,
-        z_score: 0,
+        testStatistic: 0,
         isNonInferior: false
       }
     }
@@ -787,7 +805,7 @@ function calculateEqResult(n1, s1, n2, s2, delta, alpha, useContinuity, method) 
         ci_lower: 0,
         ci_upper: 0,
         p_value: 1,
-        z_score: 0,
+        testStatistic: 0,
         isNonInferior: false
       }
     }
@@ -812,8 +830,12 @@ function calculateEqResult(n1, s1, n2, s2, delta, alpha, useContinuity, method) 
     ci_lower,
     ci_upper,
     p_value,
-    z_score: (z1 + z2) / 2, // 平均z分数(用于显示)
-    isNonInferior: ci_lower > -delta && ci_upper < delta // 等效成立条件
+    testStatistic: (z1 + z2) / 2, // TOST 两侧 Z 统计量的平均值
+    isNonInferior: ci_lower > -delta && ci_upper < delta, // 等效成立条件
+    // P0-3.0: 检验统计量元数据（TOST 双侧检验）
+    testStatisticType: 'Z',
+    df: null,
+    testStatisticLabel: `Z₁ = ${z1.toFixed(2)}, Z₂ = ${z2.toFixed(2)}`
   }
 }
 
@@ -841,7 +863,7 @@ function calculateEqResultContinuous(n1, mean1, sd1, n2, mean2, sd2, delta, alph
       ci_lower: 0,
       ci_upper: 0,
       p_value: 1,
-      t_score: 0,
+      testStatistic: 0,
       isNonInferior: false
     }
   }
@@ -860,7 +882,7 @@ function calculateEqResultContinuous(n1, mean1, sd1, n2, mean2, sd2, delta, alph
       ci_lower: 0,
       ci_upper: 0,
       p_value: 1,
-      t_score: 0,
+      testStatistic: 0,
       isNonInferior: false
     }
   }
@@ -877,6 +899,7 @@ function calculateEqResultContinuous(n1, mean1, sd1, n2, mean2, sd2, delta, alph
   const p2_value = normalCDF(t2) // 左尾P值
   const p_value = Math.max(p1_value, p2_value)
 
+  const df_eq = n1 + n2 - 2
   return {
     mean1,
     mean2,
@@ -884,8 +907,12 @@ function calculateEqResultContinuous(n1, mean1, sd1, n2, mean2, sd2, delta, alph
     ci_lower,
     ci_upper,
     p_value,
-    t_score: (t1 + t2) / 2,
-    isNonInferior: ci_lower > -delta && ci_upper < delta // 等效成立条件
+    testStatistic: (t1 + t2) / 2, // TOST 两侧 t 统计量的平均值
+    isNonInferior: ci_lower > -delta && ci_upper < delta, // 等效成立条件
+    // P0-3.0: 检验统计量元数据（TOST 双侧检验）
+    testStatisticType: 't',
+    df: df_eq,
+    testStatisticLabel: `t₁(${df_eq}) = ${t1.toFixed(2)}, t₂(${df_eq}) = ${t2.toFixed(2)}`
   }
 }
 

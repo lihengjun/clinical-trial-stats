@@ -10,7 +10,10 @@
     "./sample-size/*": "./src/sample-size/*",
     "./result-validation/*": "./src/result-validation/*",
     "./ci-estimation/*": "./src/ci-estimation/*",
-    "./sensitivity/*": "./src/sensitivity/*"
+    "./sensitivity/*": "./src/sensitivity/*",
+    "./power-analysis/*": "./src/power-analysis/*",
+    "./diagnostic/*": "./src/diagnostic/*",
+    "./correlation/*": "./src/correlation/*"
   },
   "scripts": {
     "test": "vitest run",
@@ -32,7 +35,13 @@
     "Farrington-Manning",
     "effect-size",
     "Cohen-d",
-    "sensitivity-analysis"
+    "sensitivity-analysis",
+    "power-analysis",
+    "minimum-detectable-effect",
+    "diagnostic-test",
+    "sensitivity-specificity",
+    "correlation",
+    "Fisher-Z"
   ],
   "author": "李恒骏 (lihj.net)",
   "contributors": [

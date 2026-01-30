@@ -71,7 +71,7 @@ function calculateMultigroupResult(
         ci_lower: 0,
         ci_upper: 0,
         p_value: 1,
-        z_score: 0,
+        testStatistic: 0,
         isSuccess: false
       })
       continue
@@ -118,8 +118,12 @@ function calculateMultigroupResult(
       ci_lower,
       ci_upper,
       p_value,
-      z_score,
-      isSuccess
+      testStatistic: z_score,
+      isSuccess,
+      // P0-3.0: 检验统计量元数据
+      testStatisticType: 'Z',
+      df: null,
+      testStatisticLabel: `Z = ${z_score.toFixed(2)}`
     })
   }
 
@@ -202,7 +206,7 @@ function calculateMultigroupResultContinuous(
         ci_lower: 0,
         ci_upper: 0,
         p_value: 1,
-        t_score: 0,
+        testStatistic: 0,
         isSuccess: false
       })
       continue
@@ -245,13 +249,18 @@ function calculateMultigroupResultContinuous(
       isSuccess = false
     }
 
+    const df_group = n0 + n1 - 2
     results.push({
       diff,
       ci_lower,
       ci_upper,
       p_value,
-      t_score,
-      isSuccess
+      testStatistic: t_score,
+      isSuccess,
+      // P0-3.0: 检验统计量元数据
+      testStatisticType: 't',
+      df: df_group,
+      testStatisticLabel: `t(${df_group}) = ${t_score.toFixed(2)}`
     })
   }
 

@@ -12,6 +12,10 @@ Clinical trial sample size calculation and statistical analysis library.
 - **Effect Size** — Cohen's d (continuous), Cohen's h (proportion, arcsine transformation)
 - **Sensitivity Analysis** — Parameter sweep across trial design parameters
 - **Both Endpoints** — Each method supports both proportion and continuous endpoints
+- **Power Analysis** — Reverse-calculate statistical power given sample size
+- **Minimum Detectable Effect (MDE)** — Reverse-calculate minimum detectable difference given sample size
+- **Diagnostic Test** — Sensitivity/specificity precision estimation with prevalence adjustment
+- **Correlation Analysis** — Pearson correlation sample size via Fisher Z transformation
 - **Zero Dependencies** — Pure JavaScript, runs in Node.js, browser, or any JS environment
 
 ## Status
@@ -36,6 +40,12 @@ Clinical trial sample size calculation and statistical analysis library.
 | Effect size (Cohen's d / h) | ✅ | ✅ | ✅ | — |
 | Sensitivity analysis | ✅ | ✅ | 🔲 | — |
 | Internal: normal distribution, floating-point precision | — | — | ✅ | — |
+| **Power Analysis** | | | | |
+| Power calculation (two-group/one-sample/paired) | ✅ | ✅ | ✅ | — |
+| Minimum Detectable Effect (MDE) | ✅ | ✅ | ✅ | — |
+| **Specialized Designs** | | | | |
+| Diagnostic test (sensitivity/specificity) | ✅ | — | ✅ | — |
+| Correlation analysis (Fisher Z) | — | — | ✅ | — |
 
 ✅ Done &emsp; 🔲 Planned &emsp; **Verified Against**: third-party software used for cross-validation (e.g. R, SAS, PASS) — updated after each formal test
 
@@ -68,6 +78,27 @@ const sup = calculateSupSampleSize(0.70, 0.85, 0.025, 0.8, 1)
 // Both groups: 30%, Margin: 5%, Alpha: 2.5%, Power: 80%
 const eq = calculateEqSampleSize(0.3, 0.3, 0.05, 0.025, 0.8, 1)
 // => { n1: 832, n2: 832 }
+```
+
+```javascript
+import { calculatePower, calculateDiagnosticSampleSize } from 'clinical-trial-stats'
+
+// Power analysis: given 200 subjects, what power can we achieve?
+const pw = calculatePower({
+  designType: 'two-group',
+  studyType: 'non-inferiority',
+  endpointType: 'proportion',
+  n1: 200, p1: 0.85, p2: 0.85,
+  delta: 0.1, alpha: 0.025, ratio: 1
+})
+// => { power: 0.63, z_beta: 0.33 }
+
+// Diagnostic test: estimate sensitivity 85%, precision ±5%
+const dx = calculateDiagnosticSampleSize({
+  expectedValue: 0.85, precision: 0.05,
+  confidenceLevel: 0.95, measureType: 'sensitivity'
+})
+// => { n: 196, ... }
 ```
 
 ## API
@@ -125,6 +156,51 @@ Continuous variants available for all result validation functions (append `Conti
 | Function | Description |
 |----------|-------------|
 | `runSensitivityAnalysis(mode, baseParams, config)` | Parameter sweep analysis |
+
+### Power Analysis
+
+| Function | Description |
+|----------|-------------|
+| `calculatePower({ designType, studyType, endpointType, n1, ... })` | Unified entry: reverse-calculate power |
+| `calculatePowerNI(n1, p1, p2, delta, alpha, ratio)` | Two-group NI, proportion |
+| `calculatePowerSup(n1, p1, p2, alpha, ratio)` | Two-group superiority, proportion |
+| `calculatePowerEq(n1, p1, p2, delta, alpha, ratio)` | Two-group equivalence, proportion |
+| `calculatePowerOneSample(n, p0, p1, alpha)` | One-sample, proportion |
+| `calculatePowerPaired(n, p10, p01, delta, alpha, studyType)` | Paired, proportion |
+
+Continuous variants available for all functions (append `Continuous` to function name).
+
+Returns: `{ power: number, z_beta: number }`
+
+### Minimum Detectable Effect (MDE)
+
+| Function | Description |
+|----------|-------------|
+| `calculateMDE({ designType, studyType, endpointType, n1, ... })` | Unified entry: reverse-calculate MDE |
+| `calculateMDE_NI(n1, p1, delta, alpha, power, ratio)` | Two-group NI, proportion |
+| `calculateMDE_Sup(n1, p1, alpha, power, ratio)` | Two-group superiority, proportion |
+| `calculateMDE_Eq(n1, p1, p2, alpha, power, ratio)` | Two-group equivalence, proportion |
+| `calculateMDE_OneSample(n, p0, alpha, power)` | One-sample, proportion |
+| `calculateMDE_Paired(n, p10, delta, alpha, power, studyType)` | Paired, proportion |
+
+Continuous variants available for all functions (append `Continuous` to function name).
+
+Returns: `{ mde: number, converged: boolean, ... }`
+
+### Diagnostic Test
+
+| Function | Description |
+|----------|-------------|
+| `calculateDiagnosticSampleSize({ expectedValue, precision, confidenceLevel, measureType, prevalence })` | Sensitivity/specificity precision estimation |
+| `calculateDiagnosticComparison({ p1, p2, alpha, power, alternative })` | Compare two diagnostic tests |
+
+### Correlation Analysis
+
+| Function | Description |
+|----------|-------------|
+| `calculateCorrelationSampleSize({ expectedR, alpha, power, alternative })` | Test ρ=0 |
+| `calculateCorrelationComparisonSampleSize({ r0, r1, alpha, power, alternative })` | Test ρ=ρ₀ |
+| `calculateCorrelationPower({ n, expectedR, alpha, alternative })` | Power for correlation test |
 
 ### Core Utilities
 
@@ -215,6 +291,28 @@ $$n_i = \frac{(Z_{1-\alpha_{adj}} + Z_{1-\beta})^2 \cdot [p_0(1-p_0)/r_0 + p_i(1
 
 Supports unequal allocation via weights array `[r₀, r₁, r₂, ...]`.
 
+### Power Analysis
+
+Power is the algebraic inverse of the sample size formula:
+
+$$\text{Power} = \Phi\left(\frac{\text{Effect Size} \times \sqrt{n}}{\text{SE}} - Z_{1-\alpha}\right)$$
+
+> Chow et al. (2017); Cohen (1988) Chapter 2
+
+### Diagnostic Test (Wald Approximation)
+
+$$n = \frac{Z^2 \cdot p(1-p)}{d^2}$$
+
+When prevalence is provided, total sample size $n_{total} = n / \text{prevalence}$.
+
+> Flahault et al. (2005); Buderer (1996)
+
+### Correlation Analysis (Fisher Z Transformation)
+
+$$n = \left(\frac{Z_{1-\alpha/2} + Z_{1-\beta}}{\frac{1}{2}\ln\frac{1+r}{1-r}}\right)^2 + 3$$
+
+> Fisher (1921); Cohen (1988) Chapter 3
+
 ### Confidence Interval
 
 **Proportion (Wilson Score):**
@@ -254,6 +352,11 @@ Hypothesis testing supports three methods for two-group proportion comparisons:
 7. Farrington CP, Manning G. Test statistics and sample size formulae for comparative binomial trials with null hypothesis of non-zero risk difference or non-unity relative risk. *Stat Med*. 1990;9(12):1447-1454.
 8. Newcombe RG. Interval estimation for the difference between independent proportions. *Stat Med*. 1998;17(8):873-890.
 9. NMPA. 药物临床试验样本量估计指导原则 (2023).
+10. Cohen J. *Statistical Power Analysis for the Behavioral Sciences*. 2nd ed. Lawrence Erlbaum; 1988.
+11. Flahault A, Cadilhac M, Thomas G. Sample size calculation should be performed for design accuracy in diagnostic test studies. *J Clin Epidemiol*. 2005;58(8):859-862.
+12. Buderer NMF. Statistical methodology: I. Incorporating the prevalence of disease into the sample size calculation for sensitivity and specificity. *Acad Emerg Med*. 1996;3(9):895-900.
+13. Fisher RA. On the "probable error" of a coefficient of correlation deduced from a small sample. *Metron*. 1921;1:3-32.
+14. Lenth RV. Some practical guidelines for effective sample size determination. *Am Stat*. 2001;55(3):187-193.
 
 ## Test
 

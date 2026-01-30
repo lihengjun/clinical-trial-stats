@@ -81,6 +81,54 @@ import { calculateMeanCISampleSize, calculateMeanCI } from './ci-estimation/mean
 import { runSensitivityAnalysis } from './sensitivity/analysis'
 
 // ========================================================
+// Power Analysis Modules - 效能/效应量反推模块 (P0-3.1, P0-3.2)
+// ========================================================
+import {
+  calculatePower,
+  calculatePowerNI,
+  calculatePowerSup,
+  calculatePowerEq,
+  calculatePowerNIContinuous,
+  calculatePowerSupContinuous,
+  calculatePowerEqContinuous,
+  calculatePowerOneSample,
+  calculatePowerOneSampleContinuous,
+  calculatePowerPaired,
+  calculatePowerPairedContinuous
+} from './power-analysis/power-calculation'
+
+import {
+  calculateMDE,
+  calculateMDE_NI,
+  calculateMDE_Sup,
+  calculateMDE_Eq,
+  calculateMDE_NIContinuous,
+  calculateMDE_SupContinuous,
+  calculateMDE_EqContinuous,
+  calculateMDE_OneSample,
+  calculateMDE_OneSampleContinuous,
+  calculateMDE_Paired,
+  calculateMDE_PairedContinuous
+} from './power-analysis/effect-size-calculation'
+
+// ========================================================
+// Diagnostic Test Modules - 诊断试验模块 (P0-3.3)
+// ========================================================
+import {
+  calculateDiagnosticSampleSize,
+  calculateDiagnosticComparison
+} from './diagnostic/sensitivity-specificity'
+
+// ========================================================
+// Correlation Analysis Modules - 相关性分析模块 (P0-3.4)
+// ========================================================
+import {
+  calculateCorrelationSampleSize,
+  calculateCorrelationComparisonSampleSize,
+  calculateCorrelationPower
+} from './correlation/correlation-sample-size'
+
+// ========================================================
 // Effect Size Module - 效应量计算模块
 // ========================================================
 import {
@@ -166,6 +214,41 @@ export {
   calculateCohenH,
   interpretCohenH,
   getEffectSizeInfoProportion,
+
+  // 效能反推 (Power Analysis - P0-3.1)
+  calculatePower,
+  calculatePowerNI,
+  calculatePowerSup,
+  calculatePowerEq,
+  calculatePowerNIContinuous,
+  calculatePowerSupContinuous,
+  calculatePowerEqContinuous,
+  calculatePowerOneSample,
+  calculatePowerOneSampleContinuous,
+  calculatePowerPaired,
+  calculatePowerPairedContinuous,
+
+  // 效应量反推 MDE (Effect Size - P0-3.2)
+  calculateMDE,
+  calculateMDE_NI,
+  calculateMDE_Sup,
+  calculateMDE_Eq,
+  calculateMDE_NIContinuous,
+  calculateMDE_SupContinuous,
+  calculateMDE_EqContinuous,
+  calculateMDE_OneSample,
+  calculateMDE_OneSampleContinuous,
+  calculateMDE_Paired,
+  calculateMDE_PairedContinuous,
+
+  // 诊断试验 (Diagnostic Test - P0-3.3)
+  calculateDiagnosticSampleSize,
+  calculateDiagnosticComparison,
+
+  // 相关性分析 (Correlation Analysis - P0-3.4)
+  calculateCorrelationSampleSize,
+  calculateCorrelationComparisonSampleSize,
+  calculateCorrelationPower,
 
   // 向后兼容（已弃用，请使用 calculateNISampleSize）
   calculateNISampleSize as calculateSampleSize

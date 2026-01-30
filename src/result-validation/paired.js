@@ -72,7 +72,14 @@ function calculatePairedResult(
     isNonInferior = ci_lower > -delta
   }
 
-  return { diff, ci_lower, ci_upper, p_value, isNonInferior }
+  return {
+    diff, ci_lower, ci_upper, p_value, isNonInferior,
+    // P0-3.0: 检验统计量元数据（McNemar χ² 检验）
+    testStatistic: chi2,
+    testStatisticType: 'chi2',
+    df: 1,
+    testStatisticLabel: `χ²(1) = ${chi2.toFixed(2)}`
+  }
 }
 
 // ========================================================
@@ -103,7 +110,7 @@ function calculatePairedResultContinuous(
       ci_lower: mean_diff,
       ci_upper: mean_diff,
       p_value: 1,
-      t_score: 0,
+      testStatistic: 0,
       isNonInferior: false
     }
   }
@@ -117,7 +124,7 @@ function calculatePairedResultContinuous(
       ci_lower: mean_diff,
       ci_upper: mean_diff,
       p_value: 1,
-      t_score: 0,
+      testStatistic: 0,
       isNonInferior: false
     }
   }
@@ -139,7 +146,15 @@ function calculatePairedResultContinuous(
     isNonInferior = ci_lower > -delta
   }
 
-  return { diff: mean_diff, ci_lower, ci_upper, p_value, t_score, isNonInferior }
+  const df = n - 1
+  return {
+    diff: mean_diff, ci_lower, ci_upper, p_value, isNonInferior,
+    // P0-3.0: 检验统计量元数据（配对 t 检验）
+    testStatistic: t_score,
+    testStatisticType: 't',
+    df,
+    testStatisticLabel: `t(${df}) = ${t_score.toFixed(2)}`
+  }
 }
 
 export { calculatePairedResult, calculatePairedResultContinuous }
