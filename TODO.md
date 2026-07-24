@@ -13,7 +13,7 @@
 - [x] **CTS-07 package.json 加 files 字段**（2026-07-24）：`["src", "README*", "LICENSE"]`
 - [x] **CTS-09 加 GitHub Actions CI**（2026-07-24）：`.github/workflows/ci.yml`（npm ci + ESM 冒烟 + npm test，node 版本读 .nvmrc）——⚠️ 实际生效待 push GitHub 后在 Actions 页确认
 - [x] **CTS-06 README 双语进度表纠错**（2026-07-24）：MDE 行测试列 ✅→🔲（tests/ 实证无 MDE 测试文件）；"对照验证"列回填 4 项（two-group←Chow/Julious、normal-distribution←R pnorm/qnorm、diagnostic←Flahault 2005、correlation←Cohen 1988——4 个测试文件均 grep 实证含对应文献引用）
-- [ ] **CTS-08 决策发布**：修完上述后 npm publish 0.1.x，或先改 README 为 git 安装说明（**需用户拍板**；CI 远端生效确认后再发更稳）
+- [x] **CTS-08 发布决策**（2026-07-24 用户拍板）：npm 暂不发布，先 GitHub——README 双语安装说明已改为 `npm install github:lihengjun/clinical-trial-stats`；npm publish 待后续另行拍板
 
 ## 第二批：算法层 P1 修复（先补测试再修，顺序不能反）
 

@@ -51,8 +51,10 @@
 
 ## 安装
 
+> 尚未发布到 npm registry，当前通过 GitHub 安装：
+
 ```bash
-npm install clinical-trial-stats
+npm install github:lihengjun/clinical-trial-stats
 ```
 
 ## 快速开始

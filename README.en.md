@@ -51,8 +51,10 @@ Clinical trial sample size calculation and statistical analysis library.
 
 ## Install
 
+> Not yet published to the npm registry — install from GitHub for now:
+
 ```bash
-npm install clinical-trial-stats
+npm install github:lihengjun/clinical-trial-stats
 ```
 
 ## Quick Start
