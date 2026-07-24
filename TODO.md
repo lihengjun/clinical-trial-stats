@@ -17,16 +17,14 @@
 
 ## 第二批：算法层 P1 修复（先补测试再修，顺序不能反）
 
-- [ ] **CTS-05a 补 result-validation 测试（12 函数，全库最高风险无测试区）**
-  **推进思路**：先写"锁定现状"的回归测试（含 CTS-03 的 fm==wald CI 现状），再修 bug——这样修复的 diff 会让测试从"锁定错误"翻到"锁定正确"，可审查。golden values 用 DATA_SOURCES.md 排好的 R 包（DescTools / ratesci 有 FM/MN score CI 实现）
+- [x] **CTS-05a 补 result-validation 测试**（2026-07-24 产线 w1）：4 文件 12/12 函数锁定现状测试 66 用例（tests/result-validation/）；CTS-03 两处 bug 现状已锁定并注记待修。审计：主审 PASS×2 + 抽样复核两次均为复核环境假阴性（仲裁 OVERTURNED，产物无属实指控）；npm test 223/223。产线账：PROGRESS.tsv w1。R golden 对照仍归第四批
 - [ ] **CTS-03 修 FM 置信区间**：从 Wald SE 改为反演 FM score 统计量（复用 MN 二分反演骨架，two-group.js 里就有现成模式）
   （2026-07-10 核查定位：Wald CI 在 `calculateFMResult` result-validation/two-group.js:292-298；另发现 `calculateEqResult` 的 `method='fm'` 分支〔:752-772〕根本没调用 calculateFMResult、连 p 值都是纯 Wald，需一并修）
 - [ ] **CTS-02 统一 α 语义**：CI/诊断类改 `confidenceLevel` 入参（或内部 `alpha/2`），全库 JSDoc 标注单/双侧
   **推进思路**：这是 API 破坏性变更，趁 npm 未发布/无用户时做掉，发布后就要背兼容包袱——**这是"先修再发"而不是"先发再修"的决定性理由**
 - [ ] **CTS-04 修敏感性分析 `n0`→`n2`** + 补测试（一行修复；2026-07-10 核查定位：sensitivity/analysis.js:175 `result.n0 + result.n1`，而样本量函数返回 `{n1, n2}`，两组模式 totalSampleSize 恒为 NaN）
 - [ ] **CTS-12 ratio>0 入口校验**（并入下一批的统一参数验证器亦可）
-- [ ] **CTS-05b 补 MDE 测试（11 函数，README 曾虚标）**
-  **推进思路**：低成本高置信的写法是正反回代——`calculateXSampleSize(δ)=n` 后验证 `calculateMDE(n)≈δ`，不需要外部 golden values
+- [x] **CTS-05b 补 MDE 测试**（2026-07-24 产线 w1）：11/11 函数正反回代闭环 41 用例（tests/power-analysis/effect-size-calculation.test.js），主审 PASS 封版。README 进度表 MDE 测试列可回 ✅（随下次 README 更新）
 
 ## 第三批：停滞前既有排期（STATISTICS_AUDIT_REPORT §九 整改表，17 项中真实未做的）
 

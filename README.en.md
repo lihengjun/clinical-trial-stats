@@ -42,7 +42,7 @@ Clinical trial sample size calculation and statistical analysis library.
 | Internal: normal distribution, floating-point precision | — | — | ✅ | R pnorm/qnorm |
 | **Power Analysis** | | | | |
 | Power calculation (two-group/one-sample/paired) | ✅ | ✅ | ✅ | — |
-| Minimum Detectable Effect (MDE) | ✅ | ✅ | 🔲 | — |
+| Minimum Detectable Effect (MDE) | ✅ | ✅ | ✅ | — |
 | **Specialized Designs** | | | | |
 | Diagnostic test (sensitivity/specificity) | ✅ | — | ✅ | Flahault 2005 reference values |
 | Correlation analysis (Fisher Z) | — | — | ✅ | Cohen 1988 reference values |
