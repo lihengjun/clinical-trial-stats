@@ -1,0 +1,15 @@
+w1	-	-	dispatch	master	CTS-05a/b 三块并行派工 RV1/RV2/MDE1 seat=opus	-	2026-07-24T13:27Z
+w1	RV2	-	impl	opus	PASS tests=25 funcs=6/6 src-touched=0 gaps=none	-	2026-07-24T13:35Z
+w1	MDE1	-	impl	opus	PASS tests=41 funcs=11/11 src-touched=0 gaps=none	-	2026-07-24T13:35Z
+w1	RV1	-	impl	opus	PASS tests=41 funcs=6/6 src-touched=0 gaps=none	-	2026-07-24T13:37Z
+w1	RV2	-	reviewA	grok	PASS sample=yes codex复核派出 标签行粘连已提键	-	2026-07-24T13:40Z
+w1	RV1	-	reviewA	grok	PASS sample=yes codex复核派出	-	2026-07-24T13:41Z
+w1	MDE1	-	reviewA	grok	PASS sample=no	-	2026-07-24T13:42Z
+w1	MDE1	-	sealed	master	封版 tests=41 funcs=11/11 gaps=0已处置	-	2026-07-24T13:42Z
+w1	RV2	-	review-sample	codex	FAIL 理由词面=复核环境测试未跑绿 与grok分歧 arb派出	-	2026-07-24T13:45Z
+w1	RV1	-	review-sample	codex	FAIL 理由词面=复核环境测试未跑绿 与grok分歧 arb派出	-	2026-07-24T13:48Z
+w1	RV2	-	arb	fable	OVERTURNED 复核FAIL=沙箱EPERM非产物缺陷 authorship=派工fuse显式model执法 v1边界不收sidechain	-	2026-07-24T13:48Z
+w1	RV2	-	sealed	master	封版 tests=25 funcs=6/6 gaps=0已处置 arb=OVERTURNED采信grok	-	2026-07-24T13:48Z
+w1	RV1	-	arb	fable	OVERTURNED 复核FAIL=沙箱EPERM非产物缺陷 authorship=派工fuse显式model执法	-	2026-07-24T13:50Z
+w1	RV1	-	sealed	master	封版 tests=41 funcs=6/6 gaps=0已处置 arb=OVERTURNED采信grok	-	2026-07-24T13:50Z
+w1	-	-	tally	mech	抽样一致率样本=0 复核方沙箱EPERM两次假阴性 下波复核参数单需指明兼容测试跑法	-	2026-07-24T13:51Z
