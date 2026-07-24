@@ -16,7 +16,7 @@ import { normalInverse } from '../core/normal-distribution.js'
  * @param {number} p10 - 治疗前成功/治疗后失败的比例
  * @param {number} p01 - 治疗前失败/治疗后成功的比例
  * @param {number} delta - 非劣效界值 (率差)
- * @param {number} alpha - 显著性水平
+ * @param {number} alpha - 单侧显著性水平
  * @param {number} power - 检验效能
  * @param {string} studyType - 'non-inferiority', 'superiority', 'equivalence'
  * @returns {object} - {n: 配对样本量}
@@ -84,7 +84,7 @@ function calculatePairedSampleSize(p10, p01, delta, alpha, power, studyType = 'n
  * @param {number} sigma_diff - 差值的标准差
  * @param {number} mean_diff - 预期差值均值
  * @param {number} delta - 非劣效界值
- * @param {number} alpha - 显著性水平
+ * @param {number} alpha - 单侧显著性水平
  * @param {number} power - 检验效能
  * @param {string} studyType - 检验类型
  * @returns {object} - {n: 配对数}

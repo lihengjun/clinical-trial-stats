@@ -91,7 +91,7 @@ function fisherZ(r) {
  *
  * @param {Object} params - 计算参数
  * @param {number} params.expectedR - 预期相关系数 (0 < |r| < 1)
- * @param {number} params.alpha - 显著性水平 (0-1)
+ * @param {number} params.alpha - 显著性水平 (0-1)，按 alternative 处理（双侧取 α/2，单侧取 α）
  * @param {number} params.power - 检验效能 (0-1)
  * @param {'two-sided'|'one-sided'} [params.alternative='two-sided'] - 检验方向
  * @returns {Object} 计算结果
@@ -171,7 +171,7 @@ export function calculateCorrelationSampleSize(params) {
  * @param {Object} params - 计算参数
  * @param {number} params.r0 - 原假设的相关系数 (-1 < r₀ < 1)
  * @param {number} params.r1 - 备择假设的相关系数 (-1 < r₁ < 1, r₁ ≠ r₀)
- * @param {number} params.alpha - 显著性水平 (0-1)
+ * @param {number} params.alpha - 显著性水平 (0-1)，按 alternative 处理（双侧取 α/2，单侧取 α）
  * @param {number} params.power - 检验效能 (0-1)
  * @param {'two-sided'|'one-sided'} [params.alternative='two-sided'] - 检验方向
  * @returns {Object} 计算结果
@@ -264,7 +264,7 @@ export function calculateCorrelationComparisonSampleSize(params) {
  * @param {Object} params - 计算参数
  * @param {number} params.n - 样本量
  * @param {number} params.expectedR - 预期相关系数
- * @param {number} params.alpha - 显著性水平
+ * @param {number} params.alpha - 显著性水平 (0-1)，按 alternative 处理（双侧取 α/2，单侧取 α）
  * @param {'two-sided'|'one-sided'} [params.alternative='two-sided'] - 检验方向
  * @returns {Object} 计算结果
  * @returns {number} returns.power - 检验效能

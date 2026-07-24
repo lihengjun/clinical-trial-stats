@@ -12,9 +12,15 @@ import { normalInverse } from '../core/normal-distribution.js'
 // 单组试验 (Single-Arm Trial / One-Sample Test)
 // ========================================================
 
-// Sample Size Calculation for Single-Arm Trial (Proportion)
-// H0: p ≤ p0, H1: p > p0
-// p0: 历史对照率, p1: 预期试验组率
+/**
+ * 单组试验样本量计算 (率终点)
+ * H0: p ≤ p0, H1: p > p0（单侧检验）
+ * @param {number} p0 - 历史对照率 (0-1)
+ * @param {number} p1 - 预期试验组率 (0-1)
+ * @param {number} alpha - 单侧显著性水平
+ * @param {number} power - 检验效能
+ * @returns {object} - {n1: 样本量, n2: 0}（单组试验无对照组 n2）
+ */
 function calculateOneSampleSize(p0, p1, alpha, power) {
   p0 = safeNumber(p0, 0)
   p1 = safeNumber(p1, 0)
@@ -54,8 +60,16 @@ function calculateOneSampleSize(p0, p1, alpha, power) {
   return { n1, n2: 0 } // 单组试验没有n2
 }
 
-// Sample Size Calculation for Single-Arm Trial (Continuous)
-// H0: μ ≤ μ0, H1: μ > μ0
+/**
+ * 单组试验样本量计算 (连续终点)
+ * H0: μ ≤ μ0, H1: μ > μ0（单侧检验）
+ * @param {number} mu0 - 历史对照均值
+ * @param {number} mu1 - 预期试验组均值
+ * @param {number} sigma - 总体标准差
+ * @param {number} alpha - 单侧显著性水平
+ * @param {number} power - 检验效能
+ * @returns {object} - {n1: 样本量, n2: 0}（单组试验无对照组 n2）
+ */
 function calculateOneSampleSizeContinuous(mu0, mu1, sigma, alpha, power) {
   mu0 = safeNumber(mu0, 0)
   mu1 = safeNumber(mu1, 0)

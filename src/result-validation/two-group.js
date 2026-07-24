@@ -366,7 +366,19 @@ function calculateFMResult(p1, p2, n1, n2, delta0, z_alpha) {
 // 非劣效试验 (Non-Inferiority Trial)
 // ========================================================
 
-// Result Calculation for Non-Inferiority
+/**
+ * 非劣效试验结果验证 (率终点)
+ * 判断标准: CI下限 > -δ
+ * @param {number} n1 - 对照组样本量
+ * @param {number} s1 - 对照组成功数
+ * @param {number} n2 - 试验组样本量
+ * @param {number} s2 - 试验组成功数
+ * @param {number} delta - 非劣效界值 (率差，正值)
+ * @param {number} alpha - 单侧显著性水平
+ * @param {boolean} [useContinuity=false] - 是否使用连续性校正
+ * @param {'wald'|'fm'|'wilson'|'mn'} [method='wald'] - 置信区间计算方法
+ * @returns {object} - 检验结果 {p1, p2, diff, ci_lower, ci_upper, p_value, isNonInferior, ...}
+ */
 function calculateNIResult(n1, s1, n2, s2, delta, alpha, useContinuity, method) {
   // 输入清洗
   n1 = safeNumber(n1, 1)
@@ -495,7 +507,19 @@ function calculateNIResult(n1, s1, n2, s2, delta, alpha, useContinuity, method) 
 // 连续终点非劣效试验 (Continuous Endpoint Non-Inferiority)
 // ========================================================
 
-// Result Calculation for Continuous Endpoint Non-Inferiority (t-test based)
+/**
+ * 非劣效试验结果验证 (连续终点，基于 t 检验)
+ * 判断标准: CI下限 > -δ
+ * @param {number} n1 - 对照组样本量
+ * @param {number} mean1 - 对照组均值
+ * @param {number} sd1 - 对照组标准差
+ * @param {number} n2 - 试验组样本量
+ * @param {number} mean2 - 试验组均值
+ * @param {number} sd2 - 试验组标准差
+ * @param {number} delta - 非劣效界值
+ * @param {number} alpha - 单侧显著性水平
+ * @returns {object} - 检验结果 {mean1, mean2, diff, ci_lower, ci_upper, p_value, isNonInferior, ...}
+ */
 function calculateNIResultContinuous(n1, mean1, sd1, n2, mean2, sd2, delta, alpha) {
   // 输入清洗
   n1 = safeNumber(n1, 1)
@@ -572,8 +596,18 @@ function calculateNIResultContinuous(n1, mean1, sd1, n2, mean2, sd2, delta, alph
 // 优效试验 (Superiority Trial)
 // ========================================================
 
-// Result Calculation for Superiority Trial (Proportion)
-// 判断标准: CI下限 > 0
+/**
+ * 优效试验结果验证 (率终点)
+ * 判断标准: CI下限 > 0
+ * @param {number} n1 - 对照组样本量
+ * @param {number} s1 - 对照组成功数
+ * @param {number} n2 - 试验组样本量
+ * @param {number} s2 - 试验组成功数
+ * @param {number} alpha - 单侧显著性水平
+ * @param {boolean} [useContinuity=false] - 是否使用连续性校正
+ * @param {'wald'|'fm'|'wilson'|'mn'} [method='wald'] - 置信区间计算方法
+ * @returns {object} - 检验结果 {p1, p2, diff, ci_lower, ci_upper, p_value, isNonInferior, ...}
+ */
 function calculateSupResult(n1, s1, n2, s2, alpha, useContinuity, method) {
   // 输入清洗
   n1 = safeNumber(n1, 1)
@@ -689,7 +723,18 @@ function calculateSupResult(n1, s1, n2, s2, alpha, useContinuity, method) {
   }
 }
 
-// Result Calculation for Superiority Trial (Continuous)
+/**
+ * 优效试验结果验证 (连续终点)
+ * 判断标准: CI下限 > 0
+ * @param {number} n1 - 对照组样本量
+ * @param {number} mean1 - 对照组均值
+ * @param {number} sd1 - 对照组标准差
+ * @param {number} n2 - 试验组样本量
+ * @param {number} mean2 - 试验组均值
+ * @param {number} sd2 - 试验组标准差
+ * @param {number} alpha - 单侧显著性水平
+ * @returns {object} - 检验结果 {mean1, mean2, diff, ci_lower, ci_upper, p_value, isNonInferior, ...}
+ */
 function calculateSupResultContinuous(n1, mean1, sd1, n2, mean2, sd2, alpha) {
   n1 = safeNumber(n1, 1)
   mean1 = safeNumber(mean1, 0)
@@ -758,9 +803,19 @@ function calculateSupResultContinuous(n1, mean1, sd1, n2, mean2, sd2, alpha) {
 // 等效试验 (Equivalence Trial)
 // ========================================================
 
-// Result Calculation for Equivalence Trial (Proportion)
-// 使用TOST (Two One-Sided Tests) 方法
-// 判断标准: -δ < CI下限 且 CI上限 < δ
+/**
+ * 等效试验结果验证 (率终点，TOST 双单侧检验)
+ * 判断标准: -δ < CI下限 且 CI上限 < δ
+ * @param {number} n1 - 对照组样本量
+ * @param {number} s1 - 对照组成功数
+ * @param {number} n2 - 试验组样本量
+ * @param {number} s2 - 试验组成功数
+ * @param {number} delta - 等效界值
+ * @param {number} alpha - 双侧显著性水平（TOST 总体 α，如 0.05；内部每侧用 α/2，CI 为 (1−α) 双侧置信区间）
+ * @param {boolean} [useContinuity=false] - 是否使用连续性校正
+ * @param {'wald'|'fm'|'wilson'|'mn'} [method='wald'] - 置信区间计算方法
+ * @returns {object} - 检验结果 {p1, p2, diff, ci_lower, ci_upper, p_value, isNonInferior, ...}
+ */
 function calculateEqResult(n1, s1, n2, s2, delta, alpha, useContinuity, method) {
   n1 = safeNumber(n1, 1)
   s1 = safeNumber(s1, 0)
@@ -881,7 +936,19 @@ function calculateEqResult(n1, s1, n2, s2, delta, alpha, useContinuity, method) 
   }
 }
 
-// Result Calculation for Equivalence Trial (Continuous)
+/**
+ * 等效试验结果验证 (连续终点，TOST 双单侧检验)
+ * 判断标准: -δ < CI下限 且 CI上限 < δ
+ * @param {number} n1 - 对照组样本量
+ * @param {number} mean1 - 对照组均值
+ * @param {number} sd1 - 对照组标准差
+ * @param {number} n2 - 试验组样本量
+ * @param {number} mean2 - 试验组均值
+ * @param {number} sd2 - 试验组标准差
+ * @param {number} delta - 等效界值
+ * @param {number} alpha - 双侧显著性水平（TOST 总体 α，如 0.05；内部每侧用 α/2，CI 为 (1−α) 双侧置信区间）
+ * @returns {object} - 检验结果 {mean1, mean2, diff, ci_lower, ci_upper, p_value, isNonInferior, ...}
+ */
 function calculateEqResultContinuous(n1, mean1, sd1, n2, mean2, sd2, delta, alpha) {
   n1 = safeNumber(n1, 1)
   mean1 = safeNumber(mean1, 0)

@@ -698,7 +698,7 @@ function calculateMDE_PairedContinuous(
  * @param {number} [params.sigma_diff] - 配对差值标准差
  * @param {number} [params.meanDiff] - 预期均值差（等效时需要）
  * @param {number} params.delta - 界值
- * @param {number} params.alpha - 显著性水平
+ * @param {number} params.alpha - 单侧显著性水平
  * @param {number} params.power - 检验效能
  * @param {number} [params.ratio=1] - 分配比例
  * @returns {Object} MDE 计算结果

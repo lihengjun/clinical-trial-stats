@@ -82,7 +82,7 @@ const P_UPPER_BOUND = 1 - 1e-6
  * @param {Object} params - 计算参数
  * @param {number} params.expectedValue - 预期敏感性或特异性 (0-1)
  * @param {number} params.precision - 允许的误差幅度 d (0-1，如 0.05 表示 ±5%)
- * @param {number} params.confidenceLevel - 置信水平 (0-1，如 0.95)
+ * @param {number} params.confidenceLevel - 双侧置信水平 (0-1，如 0.95)
  * @param {'sensitivity'|'specificity'} [params.measureType='sensitivity'] - 测量类型
  * @param {number} [params.prevalence] - 患病率 (0-1)，提供时计算总样本量
  * @returns {Object} 计算结果

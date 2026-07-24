@@ -17,17 +17,19 @@ import { normalInverse } from '../core/normal-distribution.js'
  * 基于Wilson Score方法
  * @param {number} p - 预期率 (0-1)
  * @param {number} width - 置信区间半宽 (0-1)
- * @param {number} alpha - 显著性水平 (单侧)
+ * @param {number} confidenceLevel - 双侧置信水平 (0-1，如 0.95 表示 95% CI)
  * @returns {object} - {n: 样本量}
  */
-function calculateRateCISampleSize(p, width, alpha) {
+function calculateRateCISampleSize(p, width, confidenceLevel) {
   // 参数无效时返回NaN，表示未定义
   if (p <= 0 || p >= 1 || width <= 0 || width >= 1) {
     return { n: NaN }
   }
 
-  const z_alpha = normalInverse(1 - alpha)
-  // 检查z值是否有效（alpha=0 时无效）
+  // 双侧置信水平换算为正态分位数：alpha = 1 - confidenceLevel，Z 取 Z_{1-α/2}
+  const alpha = 1 - confidenceLevel
+  const z_alpha = normalInverse(1 - alpha / 2)
+  // 检查z值是否有效（confidenceLevel=1 时 Z 无穷大）
   if (!isFinite(z_alpha)) {
     return { n: NaN }
   }
@@ -44,10 +46,10 @@ function calculateRateCISampleSize(p, width, alpha) {
  * 计算率的置信区间 (Wilson Score方法)
  * @param {number} n - 样本量
  * @param {number} x - 成功次数
- * @param {number} alpha - 显著性水平 (单侧)
+ * @param {number} confidenceLevel - 双侧置信水平 (0-1，如 0.95 表示 95% CI)
  * @returns {object} - 置信区间结果
  */
-function calculateRateCI(n, x, alpha) {
+function calculateRateCI(n, x, confidenceLevel) {
   if (n <= 0 || x < 0 || x > n) {
     return {
       p: 0,
@@ -58,7 +60,9 @@ function calculateRateCI(n, x, alpha) {
   }
 
   const p = safeDivide(x, n, 0)
-  const z = normalInverse(1 - alpha)
+  // 双侧置信水平换算为正态分位数：alpha = 1 - confidenceLevel，Z 取 Z_{1-α/2}
+  const alpha = 1 - confidenceLevel
+  const z = normalInverse(1 - alpha / 2)
 
   if (!isFinite(z)) {
     return { p, ci_lower: 0, ci_upper: 1, width: 1 }

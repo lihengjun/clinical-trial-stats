@@ -17,7 +17,7 @@ import { normalCDF, normalInverse } from '../core/normal-distribution.js'
  * @param {number} n10 - 治疗前成功/治疗后失败的例数
  * @param {number} n01 - 治疗前失败/治疗后成功的例数
  * @param {number} delta - 非劣效界值
- * @param {number} alpha - 显著性水平
+ * @param {number} alpha - 单侧显著性水平
  * @param {boolean} useContinuity - 是否使用连续性校正
  * @param {string} studyType - 检验类型
  * @returns {object} - 检验结果
@@ -96,7 +96,7 @@ function calculatePairedResult(
  * @param {number} mean_diff - 观察到的差值均值
  * @param {number} sd_diff - 观察到的差值标准差
  * @param {number} delta - 非劣效界值
- * @param {number} alpha - 显著性水平
+ * @param {number} alpha - 单侧显著性水平
  * @param {string} studyType - 检验类型
  * @returns {object} - 检验结果
  */

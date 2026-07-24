@@ -12,8 +12,16 @@ import { normalCDF, normalInverse } from '../core/normal-distribution.js'
 // 单组试验 (Single-Arm Trial / One-Sample Test)
 // ========================================================
 
-// Result Calculation for Single-Arm Trial (Proportion)
-// 判断标准: CI下限 > p0 (更保守的判断标准)
+/**
+ * 单组试验结果验证 (率终点)
+ * 判断标准: CI下限 > p0（更保守的判断标准）
+ * @param {number} n - 样本量
+ * @param {number} s - 成功次数
+ * @param {number} p0 - 历史对照率 (0-1)
+ * @param {number} alpha - 单侧显著性水平
+ * @param {boolean} [useContinuity=false] - 是否使用连续性校正
+ * @returns {object} - 检验结果 {p, p0, diff, ci_lower, ci_upper, p_value, ...}
+ */
 function calculateOneSampleResult(n, s, p0, alpha, useContinuity) {
   n = safeNumber(n, 1)
   s = safeNumber(s, 0)
@@ -85,7 +93,16 @@ function calculateOneSampleResult(n, s, p0, alpha, useContinuity) {
   }
 }
 
-// Result Calculation for Single-Arm Trial (Continuous)
+/**
+ * 单组试验结果验证 (连续终点)
+ * 判断标准: CI下限 > mu0
+ * @param {number} n - 样本量
+ * @param {number} mean - 样本均值
+ * @param {number} sd - 样本标准差
+ * @param {number} mu0 - 历史对照均值
+ * @param {number} alpha - 单侧显著性水平
+ * @returns {object} - 检验结果 {mean, mu0, diff, ci_lower, ci_upper, p_value, ...}
+ */
 function calculateOneSampleResultContinuous(n, mean, sd, mu0, alpha) {
   n = safeNumber(n, 1)
   mean = safeNumber(mean, 0)

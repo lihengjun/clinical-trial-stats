@@ -693,7 +693,7 @@ function calculatePowerPairedContinuous(
  * @param {number} [params.sigma_diff] - 配对: 差值标准差
  * @param {number} [params.mean_diff] - 配对: 预期差值均值
  * @param {number} params.delta - 界值
- * @param {number} params.alpha - 显著性水平
+ * @param {number} params.alpha - 单侧显著性水平
  * @param {number} [params.ratio=1] - 分配比例 (两组比较)
  * @returns {{ power: number, z_beta: number }} 检验效能和 Z_β 值
  */
