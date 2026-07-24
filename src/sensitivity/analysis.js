@@ -101,33 +101,34 @@ function runSensitivityAnalysis(mode, baseParams, sensitivityConfig) {
         // 两组比较 - 连续终点
         const studyType = params.studyType || 'non-inferiority'
         if (studyType === 'non-inferiority') {
+          // 真实签名: (sigma, delta, alpha, power, ratio, meanDiff)
+          // meanDiff = 试验组 - 对照组 = mean1 - mean0
           result = calculateNISampleSizeContinuous(
-            params.mean1,
-            params.mean0,
             params.sd,
             params.delta,
             params.alpha,
             params.power,
-            params.ratio
+            params.ratio,
+            params.mean1 - params.mean0
           )
         } else if (studyType === 'superiority') {
+          // 真实签名: (sigma, meanDiff, alpha, power, ratio)
           result = calculateSupSampleSizeContinuous(
-            params.mean1,
-            params.mean0,
             params.sd,
+            params.mean1 - params.mean0,
             params.alpha,
             params.power,
             params.ratio
           )
         } else if (studyType === 'equivalence') {
+          // 真实签名: (sigma, delta, alpha, power, ratio, meanDiff)
           result = calculateEqSampleSizeContinuous(
-            params.mean1,
-            params.mean0,
             params.sd,
             params.delta,
             params.alpha,
             params.power,
-            params.ratio
+            params.ratio,
+            params.mean1 - params.mean0
           )
         }
       } else if (mode === 'multi-proportion') {
@@ -172,7 +173,7 @@ function runSensitivityAnalysis(mode, baseParams, sensitivityConfig) {
       // 计算总样本量
       let totalSampleSize
       if (mode.startsWith('two-')) {
-        totalSampleSize = result.n0 + result.n1
+        totalSampleSize = result.n1 + result.n2
       } else {
         totalSampleSize = result.n_per_group_array
           ? result.n_per_group_array.reduce((sum, n) => sum + n, 0)
