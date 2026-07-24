@@ -1,0 +1,20 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      # ESM 导入冒烟：防止相对导入缺 .js 后缀回归（CTS-01 教训）
+      - run: node -e "await import('./src/index.js')" --input-type=module
+      - run: npm test

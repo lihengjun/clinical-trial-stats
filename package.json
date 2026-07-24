@@ -48,6 +48,11 @@
     "Claude Code (Anthropic)"
   ],
   "license": "MIT",
+  "files": [
+    "src",
+    "README*",
+    "LICENSE"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/lihengjun/clinical-trial-stats.git"
