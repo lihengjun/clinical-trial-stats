@@ -54,7 +54,7 @@
  * - p=0.90, d=0.05, 95% CI → n ≈ 139 (标准验算)
  */
 
-import { normalInverse } from '../core/normal-distribution'
+import { normalInverse } from '../core/normal-distribution.js'
 
 // ═══════════════════════════════════════════════════════════
 // 常量定义
@@ -161,9 +161,7 @@ export function calculateDiagnosticSampleSize(params) {
   // ═══════════════════════════════════════════════════════════
   // Step 5: 构建结果
   // ═══════════════════════════════════════════════════════════
-  const sampleDescription = measureType === 'sensitivity'
-    ? '确诊阳性患者'
-    : '确诊阴性患者'
+  const sampleDescription = measureType === 'sensitivity' ? '确诊阳性患者' : '确诊阴性患者'
 
   return {
     n,
@@ -206,13 +204,7 @@ export function calculateDiagnosticSampleSize(params) {
  * @see Machin et al. (2009) - 两组比例比较样本量
  */
 export function calculateDiagnosticComparison(params) {
-  const {
-    p1,
-    p2,
-    alpha,
-    power,
-    alternative = 'two-sided'
-  } = params
+  const { p1, p2, alpha, power, alternative = 'two-sided' } = params
 
   // ═══════════════════════════════════════════════════════════
   // Step 1: 参数验证

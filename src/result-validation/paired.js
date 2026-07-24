@@ -5,8 +5,8 @@
  * @date 2026-01-18
  */
 
-import { safeDivide } from '../core/safe-math'
-import { normalCDF, normalInverse } from '../core/normal-distribution'
+import { safeDivide } from '../core/safe-math.js'
+import { normalCDF, normalInverse } from '../core/normal-distribution.js'
 
 // ========================================================
 // 配对设计 - 率终点 (Paired Design - Proportion, McNemar Test)
@@ -73,7 +73,11 @@ function calculatePairedResult(
   }
 
   return {
-    diff, ci_lower, ci_upper, p_value, isNonInferior,
+    diff,
+    ci_lower,
+    ci_upper,
+    p_value,
+    isNonInferior,
     // P0-3.0: 检验统计量元数据（McNemar χ² 检验）
     testStatistic: chi2,
     testStatisticType: 'chi2',
@@ -148,7 +152,11 @@ function calculatePairedResultContinuous(
 
   const df = n - 1
   return {
-    diff: mean_diff, ci_lower, ci_upper, p_value, isNonInferior,
+    diff: mean_diff,
+    ci_lower,
+    ci_upper,
+    p_value,
+    isNonInferior,
     // P0-3.0: 检验统计量元数据（配对 t 检验）
     testStatistic: t_score,
     testStatisticType: 't',

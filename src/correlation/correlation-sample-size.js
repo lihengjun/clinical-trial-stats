@@ -53,7 +53,7 @@
  * - r=0.1, α=0.05(双侧), power=0.80 → n ≈ 782 (Cohen 1988)
  */
 
-import { normalInverse } from '../core/normal-distribution'
+import { normalInverse } from '../core/normal-distribution.js'
 
 // ═══════════════════════════════════════════════════════════
 // 辅助函数
@@ -111,12 +111,7 @@ function fisherZ(r) {
  * @see Cohen (1988) Chapter 3 - 相关系数的效能分析
  */
 export function calculateCorrelationSampleSize(params) {
-  const {
-    expectedR,
-    alpha,
-    power,
-    alternative = 'two-sided'
-  } = params
+  const { expectedR, alpha, power, alternative = 'two-sided' } = params
 
   // ═══════════════════════════════════════════════════════════
   // Step 1: 参数验证
@@ -195,13 +190,7 @@ export function calculateCorrelationSampleSize(params) {
  * @see Cohen (1988) Chapter 3 - 非零 ρ₀ 的效能分析
  */
 export function calculateCorrelationComparisonSampleSize(params) {
-  const {
-    r0,
-    r1,
-    alpha,
-    power,
-    alternative = 'two-sided'
-  } = params
+  const { r0, r1, alpha, power, alternative = 'two-sided' } = params
 
   // ═══════════════════════════════════════════════════════════
   // Step 1: 参数验证
@@ -286,12 +275,7 @@ export function calculateCorrelationComparisonSampleSize(params) {
  * calculateCorrelationPower({ n: 85, expectedR: 0.3, alpha: 0.05 })
  */
 export function calculateCorrelationPower(params) {
-  const {
-    n,
-    expectedR,
-    alpha,
-    alternative = 'two-sided'
-  } = params
+  const { n, expectedR, alpha, alternative = 'two-sided' } = params
 
   if (n <= 3 || Math.abs(expectedR) <= 0 || Math.abs(expectedR) >= 1) {
     return { power: NaN, z_beta: NaN }
@@ -345,7 +329,8 @@ function normalCDFApprox(x) {
   // Abramowitz & Stegun 26.2.17 近似
   const t = 1 / (1 + 0.2316419 * absX)
   const d = 0.3989422804014327 // 1/√(2π)
-  const poly = t * (0.319381530 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))))
+  const poly =
+    t * (0.31938153 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))))
   const result = 1 - d * Math.exp(-0.5 * absX * absX) * poly
 
   return isNeg ? 1 - result : result

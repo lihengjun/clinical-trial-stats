@@ -47,13 +47,13 @@
  * - 借助 normalInverse 的 LRU 缓存，性能开销极低
  */
 
-import { safeNumber } from '../core/safe-math'
-import { normalInverse } from '../core/normal-distribution'
-import { calculateNISampleSize } from '../sample-size/two-group/non-inferiority'
-import { calculateSupSampleSize } from '../sample-size/two-group/superiority'
-import { calculateEqSampleSize } from '../sample-size/two-group/equivalence'
-import { calculateOneSampleSize } from '../sample-size/one-sample'
-import { calculatePairedSampleSize } from '../sample-size/paired'
+import { safeNumber } from '../core/safe-math.js'
+import { normalInverse } from '../core/normal-distribution.js'
+import { calculateNISampleSize } from '../sample-size/two-group/non-inferiority.js'
+import { calculateSupSampleSize } from '../sample-size/two-group/superiority.js'
+import { calculateEqSampleSize } from '../sample-size/two-group/equivalence.js'
+import { calculateOneSampleSize } from '../sample-size/one-sample.js'
+import { calculatePairedSampleSize } from '../sample-size/paired.js'
 
 /** 二分法最大迭代次数 */
 const MAX_ITERATIONS = 50
@@ -144,7 +144,7 @@ function calculateMDE_NI(n1, p1, delta, alpha, power, ratio) {
   const p2Min = (low + high) / 2
   const mde = p2Min - p1
   const effectSize = mde + delta
-  const converged = (high - low) < TOLERANCE * 10
+  const converged = high - low < TOLERANCE * 10
 
   return { mde, p2Min, effectSize, converged }
 }
@@ -212,7 +212,7 @@ function calculateMDE_Sup(n1, p1, alpha, power, ratio) {
 
   const p2Min = (low + high) / 2
   const mde = p2Min - p1
-  const converged = (high - low) < TOLERANCE * 10
+  const converged = high - low < TOLERANCE * 10
 
   return { mde, p2Min, converged }
 }
@@ -279,7 +279,7 @@ function calculateMDE_Eq(n1, p1, p2, alpha, power, ratio) {
   }
 
   const deltaMin = (low + high) / 2
-  const converged = (high - low) < TOLERANCE * 10
+  const converged = high - low < TOLERANCE * 10
 
   return { mde: deltaMin, deltaMin, converged }
 }
@@ -327,7 +327,7 @@ function calculateMDE_NIContinuous(n1, sigma, delta, alpha, power, ratio) {
 
   // 直接代数反解
   // effectSize = (Z_α + Z_β) × σ × √(1+1/k) / √n₁
-  const effectSize = (z_alpha + z_beta) * sigma * Math.sqrt(1 + 1 / ratio) / Math.sqrt(n1)
+  const effectSize = ((z_alpha + z_beta) * sigma * Math.sqrt(1 + 1 / ratio)) / Math.sqrt(n1)
 
   // meanDiff = effectSize - |delta|
   const mde = effectSize - Math.abs(delta)
@@ -369,7 +369,7 @@ function calculateMDE_SupContinuous(n1, sigma, alpha, power, ratio) {
   }
 
   // 直接代数反解: meanDiff = (Z_α + Z_β) × σ × √(1+1/k) / √n₁
-  const mde = (z_alpha + z_beta) * sigma * Math.sqrt(1 + 1 / ratio) / Math.sqrt(n1)
+  const mde = ((z_alpha + z_beta) * sigma * Math.sqrt(1 + 1 / ratio)) / Math.sqrt(n1)
 
   return { mde, converged: true }
 }
@@ -415,7 +415,7 @@ function calculateMDE_EqContinuous(n1, sigma, alpha, power, ratio, meanDiff) {
   }
 
   // effectSize = (Z_α + Z_β) × σ × √(1+1/k) / √n₁
-  const effectSize = (z_alpha + z_beta) * sigma * Math.sqrt(1 + 1 / ratio) / Math.sqrt(n1)
+  const effectSize = ((z_alpha + z_beta) * sigma * Math.sqrt(1 + 1 / ratio)) / Math.sqrt(n1)
 
   // delta = effectSize + |meanDiff|
   const deltaMin = effectSize + Math.abs(meanDiff)
@@ -480,7 +480,7 @@ function calculateMDE_OneSample(n, p0, alpha, power) {
 
   const p1Min = (low + high) / 2
   const mde = p1Min - p0
-  const converged = (high - low) < TOLERANCE * 10
+  const converged = high - low < TOLERANCE * 10
 
   return { mde, p1Min, converged }
 }
@@ -518,7 +518,7 @@ function calculateMDE_OneSampleContinuous(n, sigma, alpha, power) {
   }
 
   // |μ₁-μ₀| = (Z_α + Z_β) × σ / √n
-  const mde = (z_alpha + z_beta) * sigma / Math.sqrt(n)
+  const mde = ((z_alpha + z_beta) * sigma) / Math.sqrt(n)
 
   return { mde, converged: true }
 }
@@ -583,7 +583,7 @@ function calculateMDE_Paired(n, p10, delta, alpha, power, studyType = 'non-infer
       if (high - low < TOLERANCE) break
     }
     const deltaMin = (low + high) / 2
-    return { mde: deltaMin, p01Min: NaN, deltaMin, converged: (high - low) < TOLERANCE * 10 }
+    return { mde: deltaMin, p01Min: NaN, deltaMin, converged: high - low < TOLERANCE * 10 }
   } else {
     // 非劣效: 搜索 p01 ∈ (max(0.001, p10-delta+ε), maxP01]
     low = Math.max(0.001, p10 - delta + 0.001)
@@ -614,7 +614,7 @@ function calculateMDE_Paired(n, p10, delta, alpha, power, studyType = 'non-infer
 
   const p01Min = (low + high) / 2
   const mde = p01Min - p10
-  const converged = (high - low) < TOLERANCE * 10
+  const converged = high - low < TOLERANCE * 10
 
   return { mde, p01Min, converged }
 }
@@ -637,7 +637,14 @@ function calculateMDE_Paired(n, p10, delta, alpha, power, studyType = 'non-infer
  * @returns {{ mde: number, converged: boolean }}
  *   mde: 非劣效时为最小 mean_diff; 优效时为最小 |mean_diff|; 等效时为最小 delta
  */
-function calculateMDE_PairedContinuous(n, sigma_diff, delta, alpha, power, studyType = 'non-inferiority') {
+function calculateMDE_PairedContinuous(
+  n,
+  sigma_diff,
+  delta,
+  alpha,
+  power,
+  studyType = 'non-inferiority'
+) {
   n = safeNumber(n, 0)
   sigma_diff = safeNumber(sigma_diff, 1)
   delta = safeNumber(delta, 0)
@@ -656,7 +663,7 @@ function calculateMDE_PairedContinuous(n, sigma_diff, delta, alpha, power, study
   }
 
   // effectSize = (Z_α + Z_β) × σ_diff / √n
-  const effectSize = (z_alpha + z_beta) * sigma_diff / Math.sqrt(n)
+  const effectSize = ((z_alpha + z_beta) * sigma_diff) / Math.sqrt(n)
 
   if (studyType === 'superiority') {
     // 优效: effectSize = mean_diff → mde = effectSize
@@ -701,9 +708,16 @@ function calculateMDE(params) {
     designType = 'two-group',
     studyType = 'non-inferiority',
     endpointType = 'proportion',
-    n1, p1, p2, p10,
-    sigma, sigma_diff, meanDiff,
-    delta, alpha, power,
+    n1,
+    p1,
+    p2,
+    p10,
+    sigma,
+    sigma_diff,
+    meanDiff,
+    delta,
+    alpha,
+    power,
     ratio = 1
   } = params
 

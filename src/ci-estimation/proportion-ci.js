@@ -5,8 +5,8 @@
  * @date 2026-01-18
  */
 
-import { safeDivide } from '../core/safe-math'
-import { normalInverse } from '../core/normal-distribution'
+import { safeDivide } from '../core/safe-math.js'
+import { normalInverse } from '../core/normal-distribution.js'
 
 // ========================================================
 // 率置信区间估计 (Rate Confidence Interval Estimation)

@@ -5,9 +5,9 @@
  * @date 2026-01-18
  */
 
-import { safeNumber, safeDivide } from '../core/safe-math'
-import { normalCDF, normalInverse } from '../core/normal-distribution'
-import { calculateWilsonCI } from '../core/confidence-interval'
+import { safeNumber, safeDivide } from '../core/safe-math.js'
+import { normalCDF, normalInverse } from '../core/normal-distribution.js'
+import { calculateWilsonCI } from '../core/confidence-interval.js'
 
 // ========================================================
 // Farrington-Manning 方法辅助函数

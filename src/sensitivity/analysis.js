@@ -12,12 +12,12 @@ import {
   calculateNISampleSizeContinuous,
   calculateSupSampleSizeContinuous,
   calculateEqSampleSizeContinuous
-} from '../sample-size/two-group'
+} from '../sample-size/two-group/index.js'
 
 import {
   calculateMultigroupSampleSize,
   calculateMultigroupSampleSizeContinuous
-} from '../sample-size/multigroup'
+} from '../sample-size/multigroup.js'
 
 // ========================================================
 // 敏感性分析 (Sensitivity Analysis)

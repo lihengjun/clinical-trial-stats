@@ -5,7 +5,7 @@
  * @date 2026-01-18
  */
 
-import { normalInverse } from '../core/normal-distribution'
+import { normalInverse } from '../core/normal-distribution.js'
 
 // ========================================================
 // 配对设计 - 率终点 (Paired Design - Proportion, McNemar Test)

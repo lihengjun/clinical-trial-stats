@@ -5,7 +5,7 @@
  * @date 2026-01-18
  */
 
-import { normalInverse } from '../core/normal-distribution'
+import { normalInverse } from '../core/normal-distribution.js'
 
 // ========================================================
 // 均值置信区间估计 (Mean Confidence Interval Estimation)

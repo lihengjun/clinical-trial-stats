@@ -16,9 +16,9 @@
 // ========================================================
 // Core Modules - 核心模块
 // ========================================================
-import { normalCDF, normalInverse } from './core/normal-distribution'
-import { safeNumber, safeDivide } from './core/safe-math'
-import { calculateWilsonCI } from './core/confidence-interval'
+import { normalCDF, normalInverse } from './core/normal-distribution.js'
+import { safeNumber, safeDivide } from './core/safe-math.js'
+import { calculateWilsonCI } from './core/confidence-interval.js'
 
 // ========================================================
 // Sample Size Modules - 样本量计算模块
@@ -30,19 +30,22 @@ import {
   calculateSupSampleSizeContinuous,
   calculateEqSampleSize,
   calculateEqSampleSizeContinuous
-} from './sample-size/two-group'
+} from './sample-size/two-group/index.js'
 
-import { calculateOneSampleSize, calculateOneSampleSizeContinuous } from './sample-size/one-sample'
+import {
+  calculateOneSampleSize,
+  calculateOneSampleSizeContinuous
+} from './sample-size/one-sample.js'
 
 import {
   calculatePairedSampleSize,
   calculatePairedSampleSizeContinuous
-} from './sample-size/paired'
+} from './sample-size/paired.js'
 
 import {
   calculateMultigroupSampleSize,
   calculateMultigroupSampleSizeContinuous
-} from './sample-size/multigroup'
+} from './sample-size/multigroup.js'
 
 // ========================================================
 // Result Validation Modules - 结果验证模块
@@ -54,31 +57,34 @@ import {
   calculateSupResultContinuous,
   calculateEqResult,
   calculateEqResultContinuous
-} from './result-validation/two-group'
+} from './result-validation/two-group.js'
 
 import {
   calculateOneSampleResult,
   calculateOneSampleResultContinuous
-} from './result-validation/one-sample'
+} from './result-validation/one-sample.js'
 
-import { calculatePairedResult, calculatePairedResultContinuous } from './result-validation/paired'
+import {
+  calculatePairedResult,
+  calculatePairedResultContinuous
+} from './result-validation/paired.js'
 
 import {
   calculateMultigroupResult,
   calculateMultigroupResultContinuous
-} from './result-validation/multigroup'
+} from './result-validation/multigroup.js'
 
 // ========================================================
 // CI Estimation Modules - 置信区间估计模块
 // ========================================================
-import { calculateRateCISampleSize, calculateRateCI } from './ci-estimation/proportion-ci'
+import { calculateRateCISampleSize, calculateRateCI } from './ci-estimation/proportion-ci.js'
 
-import { calculateMeanCISampleSize, calculateMeanCI } from './ci-estimation/mean-ci'
+import { calculateMeanCISampleSize, calculateMeanCI } from './ci-estimation/mean-ci.js'
 
 // ========================================================
 // Sensitivity Analysis Module - 敏感性分析模块
 // ========================================================
-import { runSensitivityAnalysis } from './sensitivity/analysis'
+import { runSensitivityAnalysis } from './sensitivity/analysis.js'
 
 // ========================================================
 // Power Analysis Modules - 效能/效应量反推模块 (P0-3.1, P0-3.2)
@@ -95,7 +101,7 @@ import {
   calculatePowerOneSampleContinuous,
   calculatePowerPaired,
   calculatePowerPairedContinuous
-} from './power-analysis/power-calculation'
+} from './power-analysis/power-calculation.js'
 
 import {
   calculateMDE,
@@ -109,7 +115,7 @@ import {
   calculateMDE_OneSampleContinuous,
   calculateMDE_Paired,
   calculateMDE_PairedContinuous
-} from './power-analysis/effect-size-calculation'
+} from './power-analysis/effect-size-calculation.js'
 
 // ========================================================
 // Diagnostic Test Modules - 诊断试验模块 (P0-3.3)
@@ -117,7 +123,7 @@ import {
 import {
   calculateDiagnosticSampleSize,
   calculateDiagnosticComparison
-} from './diagnostic/sensitivity-specificity'
+} from './diagnostic/sensitivity-specificity.js'
 
 // ========================================================
 // Correlation Analysis Modules - 相关性分析模块 (P0-3.4)
@@ -126,7 +132,7 @@ import {
   calculateCorrelationSampleSize,
   calculateCorrelationComparisonSampleSize,
   calculateCorrelationPower
-} from './correlation/correlation-sample-size'
+} from './correlation/correlation-sample-size.js'
 
 // ========================================================
 // Effect Size Module - 效应量计算模块
@@ -138,7 +144,7 @@ import {
   calculateCohenH,
   interpretCohenH,
   getEffectSizeInfoProportion
-} from './core/effect-size'
+} from './core/effect-size.js'
 
 // ========================================================
 // Module Exports - 统一导出

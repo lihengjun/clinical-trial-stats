@@ -48,8 +48,8 @@
  * - 文献对照: Cohen (1988) 效能表
  */
 
-import { safeNumber, safeDivide } from '../core/safe-math'
-import { normalCDF, normalInverse } from '../core/normal-distribution'
+import { safeNumber, safeDivide } from '../core/safe-math.js'
+import { normalCDF, normalInverse } from '../core/normal-distribution.js'
 
 // ========================================================
 // 两组比较 - 效能反推
@@ -91,7 +91,7 @@ function calculatePowerNI(n1, p1, p2, delta, alpha, ratio) {
   }
 
   // 效应量 = (p₂ - p₁) + δ
-  const effectSize = (p2 - p1) + delta
+  const effectSize = p2 - p1 + delta
   if (Math.abs(effectSize) < 1e-10) {
     return { power: 0, z_beta: -Infinity }
   }
@@ -103,7 +103,7 @@ function calculatePowerNI(n1, p1, p2, delta, alpha, ratio) {
   }
 
   // Z_β = effectSize × √n₁ / √variance - Z_α
-  const z_beta = effectSize * Math.sqrt(n1) / Math.sqrt(variance) - z_alpha
+  const z_beta = (effectSize * Math.sqrt(n1)) / Math.sqrt(variance) - z_alpha
   const power = normalCDF(z_beta)
 
   return { power, z_beta }
@@ -151,7 +151,7 @@ function calculatePowerSup(n1, p1, p2, alpha, ratio) {
     return { power: NaN, z_beta: NaN }
   }
 
-  const z_beta = effectSize * Math.sqrt(n1) / Math.sqrt(variance) - z_alpha
+  const z_beta = (effectSize * Math.sqrt(n1)) / Math.sqrt(variance) - z_alpha
   const power = normalCDF(z_beta)
 
   return { power, z_beta }
@@ -282,7 +282,7 @@ function calculatePowerNIContinuous(n1, sigma, delta, alpha, ratio, meanDiff) {
   // SE = σ × √(1 + 1/k) / √n₁
   const se = sigma * Math.sqrt(1 + 1 / ratio)
 
-  const z_beta = effectSize * Math.sqrt(n1) / se - z_alpha
+  const z_beta = (effectSize * Math.sqrt(n1)) / se - z_alpha
   const power = normalCDF(z_beta)
 
   return { power, z_beta }
@@ -324,7 +324,7 @@ function calculatePowerSupContinuous(n1, sigma, meanDiff, alpha, ratio) {
   }
 
   const se = sigma * Math.sqrt(1 + 1 / ratio)
-  const z_beta = meanDiff * Math.sqrt(n1) / se - z_alpha
+  const z_beta = (meanDiff * Math.sqrt(n1)) / se - z_alpha
   const power = normalCDF(z_beta)
 
   return { power, z_beta }
@@ -516,7 +516,7 @@ function calculatePowerOneSampleContinuous(n, mu0, mu1, sigma, alpha) {
   }
 
   // Z_β = |μ₁-μ₀| × √n / σ - Z_α
-  const z_beta = Math.abs(effectSize) * Math.sqrt(n) / sigma - z_alpha
+  const z_beta = (Math.abs(effectSize) * Math.sqrt(n)) / sigma - z_alpha
   const power = normalCDF(z_beta)
 
   return { power, z_beta }
@@ -597,7 +597,7 @@ function calculatePowerPaired(n, p10, p01, delta, alpha, studyType = 'non-inferi
   }
 
   // Z_β = effectSize × √n / √variance - Z_α
-  const z_beta = effectSize * Math.sqrt(n) / Math.sqrt(variance) - z_alpha
+  const z_beta = (effectSize * Math.sqrt(n)) / Math.sqrt(variance) - z_alpha
   const power = normalCDF(z_beta)
 
   return { power, z_beta }
@@ -619,7 +619,14 @@ function calculatePowerPaired(n, p10, p01, delta, alpha, studyType = 'non-inferi
  * @param {string} studyType - 'non-inferiority' | 'superiority' | 'equivalence'
  * @returns {{ power: number, z_beta: number }} 检验效能和 Z_β 值
  */
-function calculatePowerPairedContinuous(n, sigma_diff, mean_diff, delta, alpha, studyType = 'non-inferiority') {
+function calculatePowerPairedContinuous(
+  n,
+  sigma_diff,
+  mean_diff,
+  delta,
+  alpha,
+  studyType = 'non-inferiority'
+) {
   n = safeNumber(n, 0)
   sigma_diff = safeNumber(sigma_diff, 1)
   mean_diff = safeNumber(mean_diff, 0)
@@ -655,7 +662,7 @@ function calculatePowerPairedContinuous(n, sigma_diff, mean_diff, delta, alpha, 
     }
   }
 
-  const z_beta = effectSize * Math.sqrt(n) / sigma_diff - z_alpha
+  const z_beta = (effectSize * Math.sqrt(n)) / sigma_diff - z_alpha
   const power = normalCDF(z_beta)
 
   return { power, z_beta }
@@ -695,10 +702,19 @@ function calculatePower(params) {
     designType = 'two-group',
     studyType = 'non-inferiority',
     endpointType = 'proportion',
-    n1, p1, p2, p10, p01,
-    sigma, meanDiff, mu0, mu1,
-    sigma_diff, mean_diff,
-    delta, alpha,
+    n1,
+    p1,
+    p2,
+    p10,
+    p01,
+    sigma,
+    meanDiff,
+    mu0,
+    mu1,
+    sigma_diff,
+    mean_diff,
+    delta,
+    alpha,
     ratio = 1
   } = params
 

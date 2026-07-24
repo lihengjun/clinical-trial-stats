@@ -48,14 +48,14 @@
 // ========================================================
 // 非劣效试验 (Non-Inferiority Trial)
 // ========================================================
-export { calculateNISampleSize, calculateNISampleSizeContinuous } from './non-inferiority'
+export { calculateNISampleSize, calculateNISampleSizeContinuous } from './non-inferiority.js'
 
 // ========================================================
 // 优效试验 (Superiority Trial)
 // ========================================================
-export { calculateSupSampleSize, calculateSupSampleSizeContinuous } from './superiority'
+export { calculateSupSampleSize, calculateSupSampleSizeContinuous } from './superiority.js'
 
 // ========================================================
 // 等效试验 (Equivalence Trial)
 // ========================================================
-export { calculateEqSampleSize, calculateEqSampleSizeContinuous } from './equivalence'
+export { calculateEqSampleSize, calculateEqSampleSizeContinuous } from './equivalence.js'

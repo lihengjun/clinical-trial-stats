@@ -5,8 +5,8 @@
  * @date 2026-01-18
  */
 
-import { safeNumber, safeDivide } from '../core/safe-math'
-import { normalCDF, normalInverse } from '../core/normal-distribution'
+import { safeNumber, safeDivide } from '../core/safe-math.js'
+import { normalCDF, normalInverse } from '../core/normal-distribution.js'
 
 // ========================================================
 // 单组试验 (Single-Arm Trial / One-Sample Test)

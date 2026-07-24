@@ -5,7 +5,7 @@
  * @date 2026-01-18
  */
 
-import { safeNumber, safeDivide } from './safe-math'
+import { safeNumber, safeDivide } from './safe-math.js'
 
 // Wilson Score单个比例的置信区间
 function calculateWilsonCI(x, n, z) {

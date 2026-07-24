@@ -27,8 +27,8 @@
  * - 连续终点: 与疼痛评分改善试验完美匹配
  */
 
-import { safeNumber, safeDivide } from '../../core/safe-math'
-import { normalInverse } from '../../core/normal-distribution'
+import { safeNumber, safeDivide } from '../../core/safe-math.js'
+import { normalInverse } from '../../core/normal-distribution.js'
 
 /**
  * 优效试验样本量计算 - 率终点

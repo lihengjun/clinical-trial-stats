@@ -27,8 +27,8 @@
  * - 连续终点: 与 ICORG 05-03 放疗试验完美匹配
  */
 
-import { safeNumber, safeDivide } from '../../core/safe-math'
-import { normalInverse } from '../../core/normal-distribution'
+import { safeNumber, safeDivide } from '../../core/safe-math.js'
+import { normalInverse } from '../../core/normal-distribution.js'
 
 /**
  * 非劣效试验样本量计算 - 率终点

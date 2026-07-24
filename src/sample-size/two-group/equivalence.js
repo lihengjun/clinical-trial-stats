@@ -42,8 +42,8 @@
  * - 率终点: Wald方法实现，与部分文献存在方法差异
  */
 
-import { safeNumber, safeDivide, floatGte, floatLte } from '../../core/safe-math'
-import { normalInverse } from '../../core/normal-distribution'
+import { safeNumber, safeDivide, floatGte, floatLte } from '../../core/safe-math.js'
+import { normalInverse } from '../../core/normal-distribution.js'
 
 /**
  * 等效试验样本量计算 - 率终点
