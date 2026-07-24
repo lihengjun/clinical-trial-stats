@@ -23,3 +23,9 @@ w2	FIX2	-	review-sample	codex	FAIL 实质指控=two-mean模式totalSampleSize仍
 w2	FIX2	-	arb	fable	UPHELD two-mean传参错配sd入alpha槽 三studyType实测NaN 测试零two-mean用例 打回fixer	-	2026-07-24T14:27Z
 w2	FIX2	-	refix	opus	PASS two-mean三型有限正数 率终点不变 tests+3 npm=238/238 gaps=none	-	2026-07-24T14:33Z
 w2	FIX2	-	sealed	master	封版 键名修+传参错配修 tests=15 npm=238/238 arb=UPHELD已闭合 gaps=0已处置	-	2026-07-24T14:33Z
+w3	-	-	dispatch	master	CTS-02跨仓两段 FIX3(A仓API+JSDoc)先行 FIX3B(B仓适配)候 seat=opus CTS-12并入第三批验证器	-	2026-07-24T14:39Z
+w3	FIX3	-	impl	opus	PASS api=4 jsdoc-files=11 等价自检ALL_MATCH npm=238/238 gaps=none	-	2026-07-24T14:59Z
+w3	FIX3	-	impl-b	opus	PASS callsites=4 npm=181/181 基准385/97恢复 gaps=none	-	2026-07-24T15:03Z
+w3	FIX3	-	reviewA	grok	FAIL B仓simulation-logic残留旧半α调用 CI宽度塌缩~60倍 参数单范围缺口 打回fixer sample=no	-	2026-07-24T15:13Z
+w3	FIX3	-	refix	opus	PASS 全仓6调用点 修2处 等价逐字节 tests+7 npm=188/188 gaps=none	-	2026-07-24T15:21Z
+w3	FIX3	-	sealed	master	封版 CTS-02跨仓闭环 A仓12文件+B仓3文件+测试7 arb=无 审FAIL已闭合 gaps=0已处置	-	2026-07-24T15:21Z
