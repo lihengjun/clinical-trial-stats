@@ -55,16 +55,17 @@ describe('calculateNIResult (非劣效-率)', () => {
     expect(r.df).toBeNull()
   })
 
-  // 现状锁定，CTS-03 待修：FM 的 CI 与 Wald 完全一致（用观测比例 Wald SE，非 FM score 反演）
-  it('FM 分支 · CI 现状与 Wald 相同（CTS-03 待修）', () => {
+  // CTS-03 已修：FM score 反演值 —— FM CI 由 score 统计量二分反演（RMLE 方差，无 N/(N-1) 校正），
+  // 不再等于 Wald CI；与 MN CI 接近但略窄
+  it('FM 分支 · CI 为 FM score 反演值（CTS-03 已修）', () => {
     const fm = calculateNIResult(200, 170, 200, 176, 0.1, 0.025, false, 'fm')
     const wald = calculateNIResult(200, 170, 200, 176, 0.1, 0.025, false, 'wald')
-    // bug 锁定：FM CI 目前 == Wald CI
-    expect(fm.ci_lower).toBeCloseTo(wald.ci_lower, 10)
-    expect(fm.ci_upper).toBeCloseTo(wald.ci_upper, 10)
-    expect(fm.ci_lower).toBeCloseTo(-0.03691203376626771, 6)
-    expect(fm.ci_upper).toBeCloseTo(0.09691203376626777, 6)
-    // p_value/z_score 用 RMLE SE，与 Wald 不同（此部分为 FM 正确行为）
+    // 已修：FM CI 不再等于 Wald CI
+    expect(fm.ci_lower).not.toBeCloseTo(wald.ci_lower, 4)
+    expect(fm.ci_upper).not.toBeCloseTo(wald.ci_upper, 4)
+    expect(fm.ci_lower).toBeCloseTo(-0.0376753222942352, 6)
+    expect(fm.ci_upper).toBeCloseTo(0.0982986453175545, 6)
+    // p_value/z_score 用 RMLE SE（FM score，修复前后一致）
     expect(fm.p_value).toBeCloseTo(0.00013177960245458475, 8)
     expect(fm.testStatistic).toBeCloseTo(3.6487770411045464, 5)
     expect(fm.isNonInferior).toBe(true)
@@ -226,13 +227,16 @@ describe('calculateSupResult (优效-率)', () => {
     expect(r.df).toBeNull()
   })
 
-  // 现状锁定，CTS-03 待修：优效 FM CI 同样退化为 Wald CI（delta0=0）
-  it('FM 分支 · CI 现状与 Wald 相同（CTS-03 待修）', () => {
+  // CTS-03 已修：FM score 反演值 —— 优效 FM CI（delta0=0）由 score 反演，不再退化为 Wald CI
+  it('FM 分支 · CI 为 FM score 反演值（CTS-03 已修）', () => {
     const fm = calculateSupResult(200, 100, 200, 130, 0.025, false, 'fm')
     const wald = calculateSupResult(200, 100, 200, 130, 0.025, false, 'wald')
-    expect(fm.ci_lower).toBeCloseTo(wald.ci_lower, 10)
-    expect(fm.ci_upper).toBeCloseTo(wald.ci_upper, 10)
-    // p 值用 RMLE SE，与 Wald 略不同
+    // 已修：FM CI 不再等于 Wald CI
+    expect(fm.ci_lower).not.toBeCloseTo(wald.ci_lower, 4)
+    expect(fm.ci_upper).not.toBeCloseTo(wald.ci_upper, 4)
+    expect(fm.ci_lower).toBeCloseTo(0.053275325894355796, 6)
+    expect(fm.ci_upper).toBeCloseTo(0.24399916231632235, 6)
+    // p 值用 RMLE SE，与 Wald 略不同（修复前后一致）
     expect(fm.p_value).toBeCloseTo(0.0012054203347062753, 7)
     expect(fm.testStatistic).toBeCloseTo(3.034330424545042, 5)
   })
@@ -385,19 +389,20 @@ describe('calculateEqResult (等效-率)', () => {
     expect(r.testStatisticLabel).toBe('Z₁ = 3.40, Z₂ = -2.60')
   })
 
-  // 现状锁定，CTS-03 待修：method='fm' 分支未调用 calculateFMResult，
-  // 整个输出（CI + p 值 + 统计量）与 method='wald' 完全一致
-  it('FM 分支 · 输出完全等于 Wald（CTS-03 待修）', () => {
+  // CTS-03 已修：FM score 反演值 —— method='fm' 分支已接通 calculateFMResult，
+  // CI 由 FM score 反演，TOST p 值/统计量用 FM RMLE 标准误，整体不再等于 method='wald'
+  it('FM 分支 · 接通 FM 计算路径（CTS-03 已修）', () => {
     const fm = calculateEqResult(200, 100, 200, 104, 0.15, 0.05, false, 'fm')
     const wald = calculateEqResult(200, 100, 200, 104, 0.15, 0.05, false, 'wald')
-    expect(fm.ci_lower).toBeCloseTo(wald.ci_lower, 10)
-    expect(fm.ci_upper).toBeCloseTo(wald.ci_upper, 10)
-    expect(fm.p_value).toBeCloseTo(wald.p_value, 10)
-    expect(fm.testStatistic).toBeCloseTo(wald.testStatistic, 10)
-    // 固化具体值
-    expect(fm.ci_lower).toBeCloseTo(-0.07795899218329387, 6)
-    expect(fm.ci_upper).toBeCloseTo(0.1179589921832939, 6)
-    expect(fm.p_value).toBeCloseTo(0.0046471062985921074, 7)
+    // 已修：FM CI/统计量不再等于 Wald
+    expect(fm.ci_lower).not.toBeCloseTo(wald.ci_lower, 4)
+    expect(fm.ci_upper).not.toBeCloseTo(wald.ci_upper, 4)
+    // 固化 FM score 反演具体值
+    expect(fm.ci_lower).toBeCloseTo(-0.07768299013376234, 6)
+    expect(fm.ci_upper).toBeCloseTo(0.11730278700590135, 6)
+    expect(fm.p_value).toBeCloseTo(0.004654161382007027, 7)
+    expect(fm.testStatistic).toBeCloseTo(0.40008002400800313, 6)
+    expect(fm.isNonInferior).toBe(true)
   })
 
   it('Wilson 分支 · Newcombe CI（p 值仍为 TOST-Wald）', () => {

@@ -265,6 +265,66 @@ function findMNCIBound(x1, n1, x2, n2, diff, z_alpha, bound) {
 }
 
 /**
+ * 使用二分搜索找到 Farrington-Manning 置信区间的边界
+ * 通过反演 FM score 统计量：找到使 |z_FM(delta)| = z_alpha 的 delta 值。
+ * z_FM(delta) = (diff - delta) / se_rmle(delta)，其中 se_rmle 由约束 p2-p1=delta 下的
+ * RMLE 计算，方差 = p1_rmle*(1-p1_rmle)/n1 + p2_rmle*(1-p2_rmle)/n2（无 N/(N-1) 校正，
+ * 这是 FM 与 MN 的唯一区别）。
+ * @param {number} p1 - 对照组观测比例
+ * @param {number} p2 - 试验组观测比例
+ * @param {number} n1 - 对照组样本量
+ * @param {number} n2 - 试验组样本量
+ * @param {number} diff - 观测率差 (p2 - p1)
+ * @param {number} z_alpha - 临界 z 值
+ * @param {string} bound - 'lower' 或 'upper'
+ * @returns {number} 置信区间边界
+ */
+function findFMCIBound(p1, p2, n1, n2, diff, z_alpha, bound) {
+  // 给定 delta0 计算 FM score z 统计量（RMLE 方差，无 N/(N-1) 校正）
+  const calcZ = delta0 => {
+    const rmle = calculateFMRMLE(p1, p2, n1, n2, delta0)
+    const var_fm =
+      (rmle.p1_rmle * (1 - rmle.p1_rmle)) / n1 + (rmle.p2_rmle * (1 - rmle.p2_rmle)) / n2
+    const se_fm = Math.sqrt(Math.max(var_fm, 1e-12))
+    return (diff - delta0) / se_fm
+  }
+
+  // 二分搜索（bracket、收敛精度与 findMNCIBound 一致）
+  let lo, hi
+  if (bound === 'lower') {
+    lo = Math.max(-0.9999, diff - 0.5)
+    hi = diff
+    // 找到使 z(delta) = z_alpha 的 delta（下界）
+    for (let i = 0; i < 100; i++) {
+      const mid = (lo + hi) / 2
+      const z = calcZ(mid)
+      if (z > z_alpha) {
+        lo = mid
+      } else {
+        hi = mid
+      }
+      if (Math.abs(hi - lo) < 1e-8) break
+    }
+    return lo
+  } else {
+    lo = diff
+    hi = Math.min(0.9999, diff + 0.5)
+    // 找到使 z(delta) = -z_alpha 的 delta（上界）
+    for (let i = 0; i < 100; i++) {
+      const mid = (lo + hi) / 2
+      const z = calcZ(mid)
+      if (z < -z_alpha) {
+        hi = mid
+      } else {
+        lo = mid
+      }
+      if (Math.abs(hi - lo) < 1e-8) break
+    }
+    return hi
+  }
+}
+
+/**
  * 使用 Farrington-Manning 方法计算率差的置信区间和 p 值
  * @param {number} p1 - 对照组比例
  * @param {number} p2 - 试验组比例
@@ -289,13 +349,9 @@ function calculateFMResult(p1, p2, n1, n2, delta0, z_alpha) {
   const z_score = se_h0 > 0 ? (diff - delta0) / se_h0 : 0
   const p_value = 1 - normalCDF(z_score)
 
-  // 使用观测比例计算置信区间的标准误
-  const var1_obs = (p1 * (1 - p1)) / n1
-  const var2_obs = (p2 * (1 - p2)) / n2
-  const se_obs = Math.sqrt(var1_obs + var2_obs)
-
-  const ci_lower = diff - z_alpha * se_obs
-  const ci_upper = diff + z_alpha * se_obs
+  // 通过反演 FM score 统计量构建置信区间（二分搜索，RMLE 方差、无 N/(N-1) 校正）
+  const ci_lower = findFMCIBound(p1, p2, n1, n2, diff, z_alpha, 'lower')
+  const ci_upper = findFMCIBound(p1, p2, n1, n2, diff, z_alpha, 'upper')
 
   return {
     ci_lower,
@@ -750,26 +806,12 @@ function calculateEqResult(n1, s1, n2, s2, delta, alpha, useContinuity, method) 
   let ci_lower, ci_upper, se
 
   if (method === 'fm') {
-    // Farrington-Manning方法
-    const var1 = safeDivide(p1 * (1 - p1), n1, 0)
-    const var2 = safeDivide(p2 * (1 - p2), n2, 0)
-    se = Math.sqrt(var1 + var2)
-
-    if (!isFinite(se) || se === 0) {
-      return {
-        p1: 0,
-        p2: 0,
-        diff: 0,
-        ci_lower: 0,
-        ci_upper: 0,
-        p_value: 1,
-        testStatistic: 0,
-        isNonInferior: false
-      }
-    }
-
-    ci_lower = diff - z_alpha * se
-    ci_upper = diff + z_alpha * se
+    // Farrington-Manning方法（TOST 双单侧，两侧共用 FM score 路径）
+    // 调用 FM 计算路径：CI 由 FM score 反演，se 为 delta0=0 约束下的 RMLE 标准误
+    const fmResult = calculateFMResult(p1, p2, n1, n2, 0, z_alpha)
+    ci_lower = fmResult.ci_lower
+    ci_upper = fmResult.ci_upper
+    se = fmResult.se
   } else if (method === 'wilson') {
     const wilson1 = calculateWilsonCI(s1, n1, z_alpha)
     const wilson2 = calculateWilsonCI(s2, n2, z_alpha)
