@@ -55,5 +55,5 @@
 
 > 2026-07-10 镜像核对：B 侧 `wxapp_device-helper/TODO.md` 同名段存在（B 侧拆 3 条，本仓打包 1 条），实质决策一致、无矛盾漂移；B 侧 WX-13a 声明 statistics 测试写在本仓侧（对应 CTS-05a），两仓互认。
 
-- [x] **过渡期同步机制**（2026-07-24）：B 仓 `scripts/sync-statistics.sh` 落地——A→B 单向（src 全量镜像 + 共享文档 3 件：AUDIT_PLAYBOOK/DATA_SOURCES/STATISTICS_AUDIT_REPORT），`--check` 校验模式实测通过。范围裁定：两侧 docs README 各自描述各自目录不同步；A 的停滞审计、B 的 references/iteration-logs 各自私有。**约定：算法改动必须先落本仓（含测试），再由脚本带回 B——禁止手工双提交**。⚠️ 校验进两仓 CI 待两仓都 push 后启用（CI 中需 clone 对侧 GitHub 版，本地远端未同步前会误报）
+- [x] **过渡期同步机制**（2026-07-24）：B 仓 `scripts/sync-statistics.sh` 落地——A→B 单向（src 全量镜像 + 共享文档 3 件：AUDIT_PLAYBOOK/DATA_SOURCES/STATISTICS_AUDIT_REPORT），`--check` 校验模式实测通过。范围裁定：两侧 docs README 各自描述各自目录不同步；A 的停滞审计、B 的 references/iteration-logs 各自私有。**约定：算法改动必须先落本仓（含测试），再由脚本带回 B——禁止手工双提交**。校验已进 B 仓 CI（clone 本仓 GitHub 版跑 `--check`；B 仓 run 30096708051 实测 success，2026-07-24）——方向裁定：A→B 单向流，校验放 B 侧即可，本仓 CI 不加
 - [ ] **终态 npm 依赖化**：B 删除 `src/utils/statistics/` 改依赖本包（前置：CTS-08 发布决策落地）
