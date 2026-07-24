@@ -811,7 +811,7 @@ function calculateSupResultContinuous(n1, mean1, sd1, n2, mean2, sd2, alpha) {
  * @param {number} n2 - 试验组样本量
  * @param {number} s2 - 试验组成功数
  * @param {number} delta - 等效界值
- * @param {number} alpha - 双侧显著性水平（TOST 总体 α，如 0.05；内部每侧用 α/2，CI 为 (1−α) 双侧置信区间）
+ * @param {number} alpha - 单侧显著性水平（TOST 每个单侧检验的 α，如 0.025，对应 95% CI；与样本量计算 calculateEqSampleSize 约定一致）
  * @param {boolean} [useContinuity=false] - 是否使用连续性校正
  * @param {'wald'|'fm'|'wilson'|'mn'} [method='wald'] - 置信区间计算方法
  * @returns {object} - 检验结果 {p1, p2, diff, ci_lower, ci_upper, p_value, isNonInferior, ...}
@@ -838,12 +838,11 @@ function calculateEqResult(n1, s1, n2, s2, delta, alpha, useContinuity, method) 
 
   const diff = p2 - p1
 
-  // 等效检验TOST方法:
-  // - alpha: 总体显著性水平 (如 0.05)
-  // - 每侧检验使用 alpha/2 (如 0.025)
-  // - 置信区间: (1-alpha)×100% CI (如 95% CI)
-  // - z值: Φ⁻¹(1 - alpha/2)
-  const z_alpha = normalInverse(1 - alpha / 2)
+  // 等效检验TOST方法（alpha 为单侧 α，与样本量计算 calculateEqSampleSize 约定一致）:
+  // - alpha: 单侧显著性水平（TOST 每个单侧检验的 α，如 0.025）
+  // - 置信区间: (1-2·alpha)×100% CI (如 α=0.025 对应 95% CI)
+  // - z值: Φ⁻¹(1 - alpha)
+  const z_alpha = normalInverse(1 - alpha)
 
   if (!isFinite(z_alpha)) {
     return {
@@ -946,7 +945,7 @@ function calculateEqResult(n1, s1, n2, s2, delta, alpha, useContinuity, method) 
  * @param {number} mean2 - 试验组均值
  * @param {number} sd2 - 试验组标准差
  * @param {number} delta - 等效界值
- * @param {number} alpha - 双侧显著性水平（TOST 总体 α，如 0.05；内部每侧用 α/2，CI 为 (1−α) 双侧置信区间）
+ * @param {number} alpha - 单侧显著性水平（TOST 每个单侧检验的 α，如 0.025，对应 95% CI；与样本量计算 calculateEqSampleSize 约定一致）
  * @returns {object} - 检验结果 {mean1, mean2, diff, ci_lower, ci_upper, p_value, isNonInferior, ...}
  */
 function calculateEqResultContinuous(n1, mean1, sd1, n2, mean2, sd2, delta, alpha) {
@@ -977,12 +976,11 @@ function calculateEqResultContinuous(n1, mean1, sd1, n2, mean2, sd2, delta, alph
     }
   }
 
-  // 等效检验TOST方法:
-  // - alpha: 总体显著性水平 (如 0.05)
-  // - 每侧检验使用 alpha/2 (如 0.025)
-  // - 置信区间: (1-alpha)×100% CI (如 95% CI)
-  // - z值: Φ⁻¹(1 - alpha/2)
-  const z_alpha = normalInverse(1 - alpha / 2)
+  // 等效检验TOST方法（alpha 为单侧 α，与样本量计算 calculateEqSampleSize 约定一致）:
+  // - alpha: 单侧显著性水平（TOST 每个单侧检验的 α，如 0.025）
+  // - 置信区间: (1-2·alpha)×100% CI (如 α=0.025 对应 95% CI)
+  // - z值: Φ⁻¹(1 - alpha)
+  const z_alpha = normalInverse(1 - alpha)
   if (!isFinite(z_alpha)) {
     return {
       mean1,

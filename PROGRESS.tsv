@@ -29,3 +29,11 @@ w3	FIX3	-	impl-b	opus	PASS callsites=4 npm=181/181 基准385/97恢复 gaps=none	
 w3	FIX3	-	reviewA	grok	FAIL B仓simulation-logic残留旧半α调用 CI宽度塌缩~60倍 参数单范围缺口 打回fixer sample=no	-	2026-07-24T15:13Z
 w3	FIX3	-	refix	opus	PASS 全仓6调用点 修2处 等价逐字节 tests+7 npm=188/188 gaps=none	-	2026-07-24T15:21Z
 w3	FIX3	-	sealed	master	封版 CTS-02跨仓闭环 A仓12文件+B仓3文件+测试7 arb=无 审FAIL已闭合 gaps=0已处置	-	2026-07-24T15:21Z
+w4	-	-	dispatch	master	B仓解锁批开工 scout侦察先行 卡=W4-scout-card	-	2026-07-24T15:43Z
+w4	-	-	scout	opus	DONE 卡A=3条 卡C首推paired cardcheck=N/A规划卡型 gaps=1estimation同门控	-	2026-07-24T15:55Z
+w4	-	-	gap-rule	master	裁决:解锁序paired→multigroup→estimation双模块作单批次单元 各自六步分析 开关一次 gaps=1已处置	-	2026-07-24T15:55Z
+w4	W4A	-	impl	opus	PASS P3-1=fixed P4-1=doc P4-2=fixed npm=196/196 gaps=none	-	2026-07-24T16:12Z
+w4	W4B	-	impl	opus	DONE paired六步报告 findings=2❌5⚠️8✅ blocker=NaN白屏+效应量键名错 gaps=none	-	2026-07-24T16:13Z
+w4	W4A	-	gap-flag	master	流程违规:W4A改B仓statistics+B侧加算法测试 参数单未挂禁改边界 回流席W4R派出	-	2026-07-24T16:13Z
+w4	W4C	-	impl	opus	PASS blocker两条闭合+顺带W4B-2 tests+11 npm=207/207 席位越权commit=b66630a已核收 gaps=none	-	2026-07-24T16:27Z
+w4	W4R	-	impl	opus	PASS 回流A仓 A=243/243 file-diff=0 B侧算法测试已删归位 gaps=none	-	2026-07-24T16:29Z

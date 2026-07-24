@@ -33,6 +33,7 @@ import {
   calculateEqResult,
   calculateEqResultContinuous
 } from '../../src/result-validation/two-group'
+import { normalInverse } from '../../src/core/normal-distribution'
 
 // ========================================================
 // calculateNIResult —— 非劣效试验（率终点）
@@ -372,7 +373,7 @@ describe('calculateSupResultContinuous (优效-连续)', () => {
 // ========================================================
 // calculateEqResult —— 等效试验（率终点，TOST）
 // 签名: (n1, s1, n2, s2, delta, alpha, useContinuity, method)
-// 判定: -δ < CI下限 且 CI上限 < δ；z_alpha 用 alpha/2
+// 判定: -δ < CI下限 且 CI上限 < δ；z_alpha 用 Φ⁻¹(1−α)（单侧 α，P3-1 修）
 // ========================================================
 describe('calculateEqResult (等效-率)', () => {
   it('典型场景 · Wald（对照 50%，试验 52%，delta=0.15，alpha=0.05）', () => {
@@ -380,8 +381,8 @@ describe('calculateEqResult (等效-率)', () => {
     expect(r.p1).toBeCloseTo(0.5, 10)
     expect(r.p2).toBeCloseTo(0.52, 10)
     expect(r.diff).toBeCloseTo(0.02, 6)
-    expect(r.ci_lower).toBeCloseTo(-0.07795899218329387, 6)
-    expect(r.ci_upper).toBeCloseTo(0.1179589921832939, 6)
+    expect(r.ci_lower).toBeCloseTo(-0.06220977760213468, 6)
+    expect(r.ci_upper).toBeCloseTo(0.10220977760213472, 6)
     expect(r.p_value).toBeCloseTo(0.0046471062985921074, 7)
     expect(r.testStatistic).toBeCloseTo(0.400160096064045, 6)
     expect(r.isNonInferior).toBe(true)
@@ -398,8 +399,8 @@ describe('calculateEqResult (等效-率)', () => {
     expect(fm.ci_lower).not.toBeCloseTo(wald.ci_lower, 4)
     expect(fm.ci_upper).not.toBeCloseTo(wald.ci_upper, 4)
     // 固化 FM score 反演具体值
-    expect(fm.ci_lower).toBeCloseTo(-0.07768299013376234, 6)
-    expect(fm.ci_upper).toBeCloseTo(0.11730278700590135, 6)
+    expect(fm.ci_lower).toBeCloseTo(-0.06206796646118162, 6)
+    expect(fm.ci_upper).toBeCloseTo(0.10179944008588793, 6)
     expect(fm.p_value).toBeCloseTo(0.004654161382007027, 7)
     expect(fm.testStatistic).toBeCloseTo(0.40008002400800313, 6)
     expect(fm.isNonInferior).toBe(true)
@@ -407,15 +408,15 @@ describe('calculateEqResult (等效-率)', () => {
 
   it('Wilson 分支 · Newcombe CI（p 值仍为 TOST-Wald）', () => {
     const r = calculateEqResult(200, 100, 200, 104, 0.15, 0.05, false, 'wilson')
-    expect(r.ci_lower).toBeCloseTo(-0.07729907317918923, 6)
-    expect(r.ci_upper).toBeCloseTo(0.11676625826469371, 6)
+    expect(r.ci_lower).toBeCloseTo(-0.06184863798259084, 6)
+    expect(r.ci_upper).toBeCloseTo(0.1014712734175539, 6)
     expect(r.p_value).toBeCloseTo(0.0046471062985921074, 7)
   })
 
   it('MN 分支 · score CI', () => {
     const r = calculateEqResult(200, 100, 200, 104, 0.15, 0.05, false, 'mn')
-    expect(r.ci_lower).toBeCloseTo(-0.07780439734458922, 6)
-    expect(r.ci_upper).toBeCloseTo(0.11742324799299242, 6)
+    expect(r.ci_lower).toBeCloseTo(-0.062170218229293805, 6)
+    expect(r.ci_upper).toBeCloseTo(0.10190102130174639, 6)
     expect(r.p_value).toBeCloseTo(0.004698469259276861, 7)
     expect(r.testStatistic).toBeCloseTo(0.39957961102415984, 6)
   })
@@ -423,8 +424,8 @@ describe('calculateEqResult (等效-率)', () => {
   it('边界 · 零效应差 (p1=p2=0.5) → 等效成立', () => {
     const r = calculateEqResult(200, 100, 200, 100, 0.15, 0.05, false, 'wald')
     expect(r.diff).toBe(0)
-    expect(r.ci_lower).toBeCloseTo(-0.09799819930600975, 6)
-    expect(r.ci_upper).toBeCloseTo(0.09799819930600975, 6)
+    expect(r.ci_lower).toBeCloseTo(-0.08224268125668495, 6)
+    expect(r.ci_upper).toBeCloseTo(0.08224268125668495, 6)
     expect(r.p_value).toBeCloseTo(0.0013499672222352377, 7)
     expect(r.testStatistic).toBe(0)
     expect(r.isNonInferior).toBe(true)
@@ -445,8 +446,8 @@ describe('calculateEqResult (等效-率)', () => {
     expect(r.p1).toBe(0)
     expect(r.p2).toBe(0.52)
     expect(r.diff).toBe(0.52)
-    expect(r.ci_lower).toBeCloseTo(0.45076026707188693, 6)
-    expect(r.ci_upper).toBeCloseTo(0.5892397329281132, 6)
+    expect(r.ci_lower).toBeCloseTo(0.4618921844908268, 6)
+    expect(r.ci_upper).toBeCloseTo(0.5781078155091732, 6)
     expect(r.p_value).toBe(1)
     expect(r.testStatistic).toBeCloseTo(14.719601443879743, 5)
     expect(r.isNonInferior).toBe(false)
@@ -469,8 +470,8 @@ describe('calculateEqResultContinuous (等效-连续)', () => {
   it('典型场景 · n=50/50 均值 100/101 sd 8/8 delta=5 alpha=0.05', () => {
     const r = calculateEqResultContinuous(50, 100, 8, 50, 101, 8, 5, 0.05)
     expect(r.diff).toBe(1)
-    expect(r.ci_lower).toBeCloseTo(-2.135942377792312, 6)
-    expect(r.ci_upper).toBeCloseTo(4.135942377792312, 6)
+    expect(r.ci_lower).toBeCloseTo(-1.6317658002139184, 6)
+    expect(r.ci_upper).toBeCloseTo(3.6317658002139184, 6)
     expect(r.p_value).toBeCloseTo(0.006209679853494854, 7)
     expect(r.testStatistic).toBeCloseTo(0.625, 6)
     expect(r.isNonInferior).toBe(true)
@@ -483,8 +484,8 @@ describe('calculateEqResultContinuous (等效-连续)', () => {
   it('文献复用 · Julious (sigma=8, delta=5)', () => {
     const r = calculateEqResultContinuous(44, 0, 8, 44, 0, 8, 5, 0.05)
     expect(r.diff).toBe(0)
-    expect(r.ci_lower).toBeCloseTo(-3.3429258069761865, 6)
-    expect(r.ci_upper).toBeCloseTo(3.3429258069761865, 6)
+    expect(r.ci_lower).toBeCloseTo(-2.8054717694290185, 6)
+    expect(r.ci_upper).toBeCloseTo(2.8054717694290185, 6)
     expect(r.p_value).toBeCloseTo(0.00168666134942419, 7)
     expect(r.testStatistic).toBe(0)
     expect(r.df).toBe(86)
@@ -493,8 +494,8 @@ describe('calculateEqResultContinuous (等效-连续)', () => {
   it('边界 · 零效应差（均值相等）→ 等效成立', () => {
     const r = calculateEqResultContinuous(50, 100, 8, 50, 100, 8, 5, 0.05)
     expect(r.diff).toBe(0)
-    expect(r.ci_lower).toBeCloseTo(-3.135942377792312, 6)
-    expect(r.ci_upper).toBeCloseTo(3.135942377792312, 6)
+    expect(r.ci_lower).toBeCloseTo(-2.6317658002139184, 6)
+    expect(r.ci_upper).toBeCloseTo(2.6317658002139184, 6)
     expect(r.p_value).toBeCloseTo(0.0008890925719067244, 8)
     expect(r.testStatistic).toBe(0)
     expect(r.isNonInferior).toBe(true)
@@ -518,5 +519,55 @@ describe('calculateEqResultContinuous (等效-连续)', () => {
     expect(r.ci_upper).toBe(0)
     expect(r.p_value).toBe(1)
     expect(r.isNonInferior).toBe(false)
+  })
+})
+
+// ========================================================
+// 等效结果验证 alpha 单侧语义锁定（P3-1）
+//   calculateEqResult / calculateEqResultContinuous 使用单侧 α：z = Φ⁻¹(1−α)，
+//   与样本量计算 calculateEqSampleSize* 及本文件 NI/Sup 结果验证一致（回归防护）。
+//   alpha=0.025（单侧）→ z≈1.95996 → (1−2α)=95% CI；修复前误用 Φ⁻¹(1−α/2)≈2.24。
+// @see docs/test-reports/static-analysis/2026-01-30-comparison-cont-eq.md 问题 P3-1
+// ========================================================
+describe('等效结果验证 - alpha 单侧语义锁定（P3-1）', () => {
+  // TOST 单侧 α 约定：alpha=0.025 → z=Φ⁻¹(1−α)≈1.96，对应 (1−2α)=95% CI
+  const ALPHA = 0.025
+  const Z_SINGLE_SIDED = normalInverse(1 - ALPHA) // ≈ 1.95996（正确，单侧 α 约定）
+  const Z_BUGGY_HALVED = normalInverse(1 - ALPHA / 2) // ≈ 2.24140（P3-1 修复前的错误值）
+
+  describe('calculateEqResultContinuous（连续终点）', () => {
+    // n1=n2=100, sd1=sd2=10, mean 相等 → diff=0
+    // pooledVar=100, se=sqrt(100*(1/100+1/100))=sqrt(2)≈1.41421
+    const SE = Math.sqrt(2)
+    const r = calculateEqResultContinuous(100, 0, 10, 100, 0, 10, 5, ALPHA)
+
+    it('CI 半宽使用单侧 α 的 z=Φ⁻¹(1−α)≈1.96（不再 /2）', () => {
+      // 半宽 = z * se；diff=0 故 ci_upper = z*se
+      expect(r.ci_upper / SE).toBeCloseTo(Z_SINGLE_SIDED, 4)
+    })
+
+    it('回归防护：CI 半宽的 z 不等于修复前的 Φ⁻¹(1−α/2)≈2.24', () => {
+      expect(r.ci_upper / SE).not.toBeCloseTo(Z_BUGGY_HALVED, 2)
+    })
+
+    it('ci_upper 数值锁定 ≈ 2.7718（1.95996×√2）', () => {
+      expect(r.ci_upper).toBeCloseTo(Z_SINGLE_SIDED * SE, 4)
+      expect(r.ci_lower).toBeCloseTo(-Z_SINGLE_SIDED * SE, 4)
+    })
+  })
+
+  describe('calculateEqResult（率终点，Wald）', () => {
+    // n1=n2=100, s1=s2=50 → p1=p2=0.5, diff=0
+    // se=sqrt(0.5*0.5/100 + 0.5*0.5/100)=sqrt(0.005)
+    const SE = Math.sqrt(0.5 * 0.5 / 100 + 0.5 * 0.5 / 100)
+    const r = calculateEqResult(100, 50, 100, 50, 0.2, ALPHA, false, 'wald')
+
+    it('CI 半宽使用单侧 α 的 z=Φ⁻¹(1−α)≈1.96（与连续终点一致）', () => {
+      expect(r.ci_upper / SE).toBeCloseTo(Z_SINGLE_SIDED, 4)
+    })
+
+    it('回归防护：CI 半宽的 z 不等于修复前的 Φ⁻¹(1−α/2)≈2.24', () => {
+      expect(r.ci_upper / SE).not.toBeCloseTo(Z_BUGGY_HALVED, 2)
+    })
   })
 })
