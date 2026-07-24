@@ -23,9 +23,9 @@ Clinical trial sample size calculation and statistical analysis library.
 | Module | Proportion | Continuous | Tests | Verified Against |
 |--------|:----------:|:----------:|:-----:|------------------|
 | **Sample Size Calculation** | | | | |
-| Non-inferiority (two-group) | ✅ | ✅ | ✅ | — |
-| Superiority (two-group) | ✅ | ✅ | ✅ | — |
-| Equivalence / TOST (two-group) | ✅ | ✅ | ✅ | — |
+| Non-inferiority (two-group) | ✅ | ✅ | ✅ | Chow & Liu / Julious reference values |
+| Superiority (two-group) | ✅ | ✅ | ✅ | Chow & Liu / Julious reference values |
+| Equivalence / TOST (two-group) | ✅ | ✅ | ✅ | Chow & Liu / Julious reference values |
 | One-sample | ✅ | ✅ | 🔲 | — |
 | Paired design (McNemar) | ✅ | ✅ | 🔲 | — |
 | Multi-group (Bonferroni) | ✅ | ✅ | 🔲 | — |
@@ -39,13 +39,13 @@ Clinical trial sample size calculation and statistical analysis library.
 | Mean CI (Normal approx.) | — | ✅ | 🔲 | — |
 | Effect size (Cohen's d / h) | ✅ | ✅ | ✅ | — |
 | Sensitivity analysis | ✅ | ✅ | 🔲 | — |
-| Internal: normal distribution, floating-point precision | — | — | ✅ | — |
+| Internal: normal distribution, floating-point precision | — | — | ✅ | R pnorm/qnorm |
 | **Power Analysis** | | | | |
 | Power calculation (two-group/one-sample/paired) | ✅ | ✅ | ✅ | — |
-| Minimum Detectable Effect (MDE) | ✅ | ✅ | ✅ | — |
+| Minimum Detectable Effect (MDE) | ✅ | ✅ | 🔲 | — |
 | **Specialized Designs** | | | | |
-| Diagnostic test (sensitivity/specificity) | ✅ | — | ✅ | — |
-| Correlation analysis (Fisher Z) | — | — | ✅ | — |
+| Diagnostic test (sensitivity/specificity) | ✅ | — | ✅ | Flahault 2005 reference values |
+| Correlation analysis (Fisher Z) | — | — | ✅ | Cohen 1988 reference values |
 
 ✅ Done &emsp; 🔲 Planned &emsp; **Verified Against**: third-party software used for cross-validation (e.g. R, SAS, PASS) — updated after each formal test
 
