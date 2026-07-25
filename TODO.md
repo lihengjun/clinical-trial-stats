@@ -34,8 +34,8 @@
 
 ## 第四批：R 对照验证（VALIDATION_STRATEGY.md 的 5 个未勾项）
 
-- [ ] 装 R 环境（pwr / TrialSize / DescTools / gsDesign，DATA_SOURCES.md 已列好包与源文件路径）
-- [ ] 试点：两组-率-非劣效一条链跑通（R 脚本产出 golden JSON → vitest fixture 消费）
+- [x] 装 R 环境（2026-07-25 产线 w9）：R 4.6.1 + TrialSize/gsDesign（试点最小集；pwr/DescTools 随扩展全量按需装）
+- [x] 试点：两组-率-非劣效链跑通（2026-07-25 产线 w9，commit 5f87980）：14 组 golden（每值含完整 R 调用命令，可重跑）+ fixture 消费测试；max 相对偏差 1.60%，2 条超容差入已知偏差清单（近似薄弱区，供第三批 P1 精度项排序用）。审计含 golden 逐字重放验真；npm test 327/327
 - [ ] 扩展全量：按 README 进度表逐行补"对照验证"列
   **推进思路**：产出物固定为 `tests/fixtures/golden-<module>.json`（每个值注明 R 命令），让对照验证成为可重跑的资产而不是一次性报告；McNemar 与等效率终点这两个本次审计"未验证"项优先排入
 - [ ] wxapp 侧的 docs/test-framework 811 快照用例可搬来做广度回归（该资产只在 B 侧）
