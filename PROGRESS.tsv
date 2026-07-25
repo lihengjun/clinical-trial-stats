@@ -79,3 +79,9 @@ w8	W8C	-	impl	opus	PASS entries=38 slipthrough=4闭合 flipped=2 tests+28 npm=27
 w8	W8C	-	reviewA	grok	FAIL 部分入口先safeNumber后validate 类型无效被吞返回假合法值 打回fixer sample=no	-	2026-07-25T03:13Z
 w8	W8C	-	refix	opus	PASS 修8入口(审计6+自查2) 38/38拒绝0假合法 tests+31 npm=302/302 gaps=none	-	2026-07-25T03:36Z
 w8	W8C	-	sealed	master	封版 统一参数验证器+CTS-12闭合 审FAIL顺序已修 gaps=0已处置	-	2026-07-25T03:36Z
+w8	W8B	-	impl	opus	PASS B侧镜像翻转2断言 npm=313/313 gaps=none	-	2026-07-25T03:39Z
+w9	-	-	dispatch	master	R对照验证波开工 先探环境 试点=两组率非劣效golden链	-	2026-07-25T03:42Z
+w9	-	-	env	master	R-4.6.1安装完成 Rscript可用	-	2026-07-25T03:44Z
+w9	W9A	-	impl	opus	PASS TrialSize+gsDesign grid=14 maxdev=1.60% knowndev=2 npm=327/327 gaps=none	-	2026-07-25T04:15Z
+w9	W9A	-	reviewA	grok	PASS sample=no golden重放验真过	-	2026-07-25T04:21Z
+w9	W9A	-	sealed	master	封版 R对照试点链跑通 grid=14 maxdev=1.60% gaps=0已处置	-	2026-07-25T04:21Z

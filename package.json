@@ -17,7 +17,8 @@
   },
   "scripts": {
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "golden:two-group-ni": "Rscript tests/fixtures/r/generate-two-group-ni.R"
   },
   "keywords": [
     "clinical-trial",

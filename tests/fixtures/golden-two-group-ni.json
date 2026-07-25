@@ -1,0 +1,146 @@
+{
+  "meta": {
+    "description": "两组-率-非劣效 R 对照 golden；本库 calculateNISampleSize 逐条对照",
+    "generated_by": "tests/fixtures/r/generate-two-group-ni.R",
+    "regenerate": "npm run golden:two-group-ni",
+    "r_version": "4.6.1",
+    "r_packages": { "TrialSize": "1.4.1", "gsDesign": "3.10.1" },
+    "library_function": "calculateNISampleSize (率终点)",
+    "primary_golden": "TrialSize::TwoSampleProportion.NIS — Chow unpooled 正态近似（与本库同一公式, 验证实现保真度）",
+    "fm_reference": "gsDesign::nBinomial — Farrington-Manning FM 方差（交叉方法参考; 仅对称 ratio=1 场景, 因 FM 非对称符号约定歧义）",
+    "rel_tolerance": 0.02,
+    "rel_tolerance_basis": "界定取整偏差: 本库 ⌈n⌉ vs R 连续值; 实测 max 1.60% (n~50), median 0.23%; 2% 留裕度",
+    "method_band": 0.02,
+    "method_band_basis": "正态近似 vs FM 方差一致带; 实测对称场景双峰: 6/8 例 <1.8%, 2 例高基线边界 (p>=0.85) >2.5%",
+    "known_deviation_count": 2
+  },
+  "records": [
+    {
+      "id": "ni-01-readme-symmetric",
+      "label": "README 快速开始: 对照=试验=0.85, delta=0.10, alpha=0.025, power=0.80, ratio=1",
+      "inputs": { "p1": 0.85, "p2": 0.85, "delta": 0.1, "alpha": 0.025, "power": 0.8, "ratio": 1 },
+      "golden": { "source": "TrialSize::TwoSampleProportion.NIS", "method": "Chow et al. (2017) NI 两组比例, unpooled 正态近似", "r_call": "TwoSampleProportion.NIS(alpha=0.025, beta=0.2, p1=0.85, p2=0.85, k=1, delta=0, margin=-0.1)  # p1=试验组, p2=对照组; 返回=试验组连续n, 对照组=返回/k", "n1_control": 200.146433, "n2_treatment": 200.146433, "n1_control_ceil": 201, "n2_treatment_ceil": 201 },
+      "fm_reference": { "source": "gsDesign::nBinomial", "method": "Farrington-Manning 受约束 MLE 方差", "r_call": "nBinomial(p1=0.85, p2=0.85, alpha=0.025, beta=0.2, delta0=-0.1, ratio=1, sided=1) / 2  # FM 受约束MLE方差; /2 取每臂", "per_arm": 206.903076, "method_deviation": 0.028531 },
+      "known_deviation": true,
+      "known_deviation_note": "高基线率场景: 本库 unpooled 正态近似相对 gsDesign FM 方差偏差 2.85% (> 方法带 2%), 系已知方法学差异, 非实现缺陷; 待第三批 P1 精度项评估"
+    },
+    {
+      "id": "ni-02-classic-070",
+      "label": "经典 NI: 对照=试验=0.70, delta=0.10, alpha=0.025, power=0.80, ratio=1",
+      "inputs": { "p1": 0.7, "p2": 0.7, "delta": 0.1, "alpha": 0.025, "power": 0.8, "ratio": 1 },
+      "golden": { "source": "TrialSize::TwoSampleProportion.NIS", "method": "Chow et al. (2017) NI 两组比例, unpooled 正态近似", "r_call": "TwoSampleProportion.NIS(alpha=0.025, beta=0.2, p1=0.7, p2=0.7, k=1, delta=0, margin=-0.1)  # p1=试验组, p2=对照组; 返回=试验组连续n, 对照组=返回/k", "n1_control": 329.652949, "n2_treatment": 329.652949, "n1_control_ceil": 330, "n2_treatment_ceil": 330 },
+      "fm_reference": { "source": "gsDesign::nBinomial", "method": "Farrington-Manning 受约束 MLE 方差", "r_call": "nBinomial(p1=0.7, p2=0.7, alpha=0.025, beta=0.2, delta0=-0.1, ratio=1, sided=1) / 2  # FM 受约束MLE方差; /2 取每臂", "per_arm": 328.932788, "method_deviation": 0.003244 },
+      "known_deviation": false,
+      "known_deviation_note": null
+    },
+    {
+      "id": "ni-03-power090",
+      "label": "高 power 0.90: 对照=试验=0.80, delta=0.10, alpha=0.025, ratio=1",
+      "inputs": { "p1": 0.8, "p2": 0.8, "delta": 0.1, "alpha": 0.025, "power": 0.9, "ratio": 1 },
+      "golden": { "source": "TrialSize::TwoSampleProportion.NIS", "method": "Chow et al. (2017) NI 两组比例, unpooled 正态近似", "r_call": "TwoSampleProportion.NIS(alpha=0.025, beta=0.1, p1=0.8, p2=0.8, k=1, delta=0, margin=-0.1)  # p1=试验组, p2=对照组; 返回=试验组连续n, 对照组=返回/k", "n1_control": 336.237538, "n2_treatment": 336.237538, "n1_control_ceil": 337, "n2_treatment_ceil": 337 },
+      "fm_reference": { "source": "gsDesign::nBinomial", "method": "Farrington-Manning 受约束 MLE 方差", "r_call": "nBinomial(p1=0.8, p2=0.8, alpha=0.025, beta=0.1, delta0=-0.1, ratio=1, sided=1) / 2  # FM 受约束MLE方差; /2 取每臂", "per_arm": 339.769139, "method_deviation": 0.00815 },
+      "known_deviation": false,
+      "known_deviation_note": null
+    },
+    {
+      "id": "ni-04-alpha05",
+      "label": "单侧 alpha=0.05: 对照=试验=0.75, delta=0.10, power=0.80, ratio=1",
+      "inputs": { "p1": 0.75, "p2": 0.75, "delta": 0.1, "alpha": 0.05, "power": 0.8, "ratio": 1 },
+      "golden": { "source": "TrialSize::TwoSampleProportion.NIS", "method": "Chow et al. (2017) NI 两组比例, unpooled 正态近似", "r_call": "TwoSampleProportion.NIS(alpha=0.05, beta=0.2, p1=0.75, p2=0.75, k=1, delta=0, margin=-0.1)  # p1=试验组, p2=对照组; 返回=试验组连续n, 对照组=返回/k", "n1_control": 231.845896, "n2_treatment": 231.845896, "n1_control_ceil": 232, "n2_treatment_ceil": 232 },
+      "fm_reference": { "source": "gsDesign::nBinomial", "method": "Farrington-Manning 受约束 MLE 方差", "r_call": "nBinomial(p1=0.75, p2=0.75, alpha=0.05, beta=0.2, delta0=-0.1, ratio=1, sided=1) / 2  # FM 受约束MLE方差; /2 取每臂", "per_arm": 232.412773, "method_deviation": 0.001776 },
+      "known_deviation": false,
+      "known_deviation_note": null
+    },
+    {
+      "id": "ni-05-tight-margin",
+      "label": "窄界值 delta=0.05 (大样本): 对照=试验=0.85, alpha=0.025, power=0.80, ratio=1",
+      "inputs": { "p1": 0.85, "p2": 0.85, "delta": 0.05, "alpha": 0.025, "power": 0.8, "ratio": 1 },
+      "golden": { "source": "TrialSize::TwoSampleProportion.NIS", "method": "Chow et al. (2017) NI 两组比例, unpooled 正态近似", "r_call": "TwoSampleProportion.NIS(alpha=0.025, beta=0.2, p1=0.85, p2=0.85, k=1, delta=0, margin=-0.05)  # p1=试验组, p2=对照组; 返回=试验组连续n, 对照组=返回/k", "n1_control": 800.585733, "n2_treatment": 800.585733, "n1_control_ceil": 801, "n2_treatment_ceil": 801 },
+      "fm_reference": { "source": "gsDesign::nBinomial", "method": "Farrington-Manning 受约束 MLE 方差", "r_call": "nBinomial(p1=0.85, p2=0.85, alpha=0.025, beta=0.2, delta0=-0.05, ratio=1, sided=1) / 2  # FM 受约束MLE方差; /2 取每臂", "per_arm": 808.095154, "method_deviation": 0.00878 },
+      "known_deviation": false,
+      "known_deviation_note": null
+    },
+    {
+      "id": "ni-06-wide-margin",
+      "label": "宽界值 delta=0.15 (小样本): 对照=试验=0.60, alpha=0.025, power=0.80, ratio=1",
+      "inputs": { "p1": 0.6, "p2": 0.6, "delta": 0.15, "alpha": 0.025, "power": 0.8, "ratio": 1 },
+      "golden": { "source": "TrialSize::TwoSampleProportion.NIS", "method": "Chow et al. (2017) NI 两组比例, unpooled 正态近似", "r_call": "TwoSampleProportion.NIS(alpha=0.025, beta=0.2, p1=0.6, p2=0.6, k=1, delta=0, margin=-0.15)  # p1=试验组, p2=对照组; 返回=试验组连续n, 对照组=返回/k", "n1_control": 167.442768, "n2_treatment": 167.442768, "n1_control_ceil": 168, "n2_treatment_ceil": 168 },
+      "fm_reference": { "source": "gsDesign::nBinomial", "method": "Farrington-Manning 受约束 MLE 方差", "r_call": "nBinomial(p1=0.6, p2=0.6, alpha=0.025, beta=0.2, delta0=-0.15, ratio=1, sided=1) / 2  # FM 受约束MLE方差; /2 取每臂", "per_arm": 165.129131, "method_deviation": 0.017386 },
+      "known_deviation": false,
+      "known_deviation_note": null
+    },
+    {
+      "id": "ni-07-asym-favorable",
+      "label": "非对称有利 (试验0.80>对照0.75): delta=0.10, alpha=0.025, power=0.80, ratio=1",
+      "inputs": { "p1": 0.75, "p2": 0.8, "delta": 0.1, "alpha": 0.025, "power": 0.8, "ratio": 1 },
+      "golden": { "source": "TrialSize::TwoSampleProportion.NIS", "method": "Chow et al. (2017) NI 两组比例, unpooled 正态近似", "r_call": "TwoSampleProportion.NIS(alpha=0.025, beta=0.2, p1=0.8, p2=0.75, k=1, delta=0.05, margin=-0.1)  # p1=试验组, p2=对照组; 返回=试验组连续n, 对照组=返回/k", "n1_control": 121.221587, "n2_treatment": 121.221587, "n1_control_ceil": 122, "n2_treatment_ceil": 122 },
+      "fm_reference": null,
+      "known_deviation": false,
+      "known_deviation_note": null
+    },
+    {
+      "id": "ni-08-asym-unfavorable",
+      "label": "非对称不利 (试验0.75<对照0.80, 界内): delta=0.10, alpha=0.025, power=0.80, ratio=1",
+      "inputs": { "p1": 0.8, "p2": 0.75, "delta": 0.1, "alpha": 0.025, "power": 0.8, "ratio": 1 },
+      "golden": { "source": "TrialSize::TwoSampleProportion.NIS", "method": "Chow et al. (2017) NI 两组比例, unpooled 正态近似", "r_call": "TwoSampleProportion.NIS(alpha=0.025, beta=0.2, p1=0.75, p2=0.8, k=1, delta=-0.05, margin=-0.1)  # p1=试验组, p2=对照组; 返回=试验组连续n, 对照组=返回/k", "n1_control": 1090.994283, "n2_treatment": 1090.994283, "n1_control_ceil": 1091, "n2_treatment_ceil": 1091 },
+      "fm_reference": null,
+      "known_deviation": false,
+      "known_deviation_note": null
+    },
+    {
+      "id": "ni-09-ratio2",
+      "label": "分配比 2:1 (试验:对照): 对照=试验=0.70, delta=0.10, alpha=0.025, power=0.80",
+      "inputs": { "p1": 0.7, "p2": 0.7, "delta": 0.1, "alpha": 0.025, "power": 0.8, "ratio": 2 },
+      "golden": { "source": "TrialSize::TwoSampleProportion.NIS", "method": "Chow et al. (2017) NI 两组比例, unpooled 正态近似", "r_call": "TwoSampleProportion.NIS(alpha=0.025, beta=0.2, p1=0.7, p2=0.7, k=2, delta=0, margin=-0.1)  # p1=试验组, p2=对照组; 返回=试验组连续n, 对照组=返回/k", "n1_control": 247.239712, "n2_treatment": 494.479423, "n1_control_ceil": 248, "n2_treatment_ceil": 495 },
+      "fm_reference": null,
+      "known_deviation": false,
+      "known_deviation_note": null
+    },
+    {
+      "id": "ni-10-ratio05",
+      "label": "分配比 0.5 (试验:对照): 对照=试验=0.70, delta=0.10, alpha=0.025, power=0.80",
+      "inputs": { "p1": 0.7, "p2": 0.7, "delta": 0.1, "alpha": 0.025, "power": 0.8, "ratio": 0.5 },
+      "golden": { "source": "TrialSize::TwoSampleProportion.NIS", "method": "Chow et al. (2017) NI 两组比例, unpooled 正态近似", "r_call": "TwoSampleProportion.NIS(alpha=0.025, beta=0.2, p1=0.7, p2=0.7, k=0.5, delta=0, margin=-0.1)  # p1=试验组, p2=对照组; 返回=试验组连续n, 对照组=返回/k", "n1_control": 494.479423, "n2_treatment": 247.239712, "n1_control_ceil": 495, "n2_treatment_ceil": 248 },
+      "fm_reference": null,
+      "known_deviation": false,
+      "known_deviation_note": null
+    },
+    {
+      "id": "ni-11-low-rate",
+      "label": "低基线率: 对照=试验=0.30, delta=0.10, alpha=0.025, power=0.80, ratio=1",
+      "inputs": { "p1": 0.3, "p2": 0.3, "delta": 0.1, "alpha": 0.025, "power": 0.8, "ratio": 1 },
+      "golden": { "source": "TrialSize::TwoSampleProportion.NIS", "method": "Chow et al. (2017) NI 两组比例, unpooled 正态近似", "r_call": "TwoSampleProportion.NIS(alpha=0.025, beta=0.2, p1=0.3, p2=0.3, k=1, delta=0, margin=-0.1)  # p1=试验组, p2=对照组; 返回=试验组连续n, 对照组=返回/k", "n1_control": 329.652949, "n2_treatment": 329.652949, "n1_control_ceil": 330, "n2_treatment_ceil": 330 },
+      "fm_reference": { "source": "gsDesign::nBinomial", "method": "Farrington-Manning 受约束 MLE 方差", "r_call": "nBinomial(p1=0.3, p2=0.3, alpha=0.025, beta=0.2, delta0=-0.1, ratio=1, sided=1) / 2  # FM 受约束MLE方差; /2 取每臂", "per_arm": 328.932788, "method_deviation": 0.003244 },
+      "known_deviation": false,
+      "known_deviation_note": null
+    },
+    {
+      "id": "ni-12-high-rate-bound",
+      "label": "高基线近边界: 对照=试验=0.90, delta=0.05, alpha=0.025, power=0.80, ratio=1",
+      "inputs": { "p1": 0.9, "p2": 0.9, "delta": 0.05, "alpha": 0.025, "power": 0.8, "ratio": 1 },
+      "golden": { "source": "TrialSize::TwoSampleProportion.NIS", "method": "Chow et al. (2017) NI 两组比例, unpooled 正态近似", "r_call": "TwoSampleProportion.NIS(alpha=0.025, beta=0.2, p1=0.9, p2=0.9, k=1, delta=0, margin=-0.05)  # p1=试验组, p2=对照组; 返回=试验组连续n, 对照组=返回/k", "n1_control": 565.119341, "n2_treatment": 565.119341, "n1_control_ceil": 566, "n2_treatment_ceil": 566 },
+      "fm_reference": { "source": "gsDesign::nBinomial", "method": "Farrington-Manning 受约束 MLE 方差", "r_call": "nBinomial(p1=0.9, p2=0.9, alpha=0.025, beta=0.2, delta0=-0.05, ratio=1, sided=1) / 2  # FM 受约束MLE方差; /2 取每臂", "per_arm": 580.737905, "method_deviation": 0.025378 },
+      "known_deviation": true,
+      "known_deviation_note": "高基线率场景: 本库 unpooled 正态近似相对 gsDesign FM 方差偏差 2.54% (> 方法带 2%), 系已知方法学差异, 非实现缺陷; 待第三批 P1 精度项评估"
+    },
+    {
+      "id": "ni-13-asym-power085",
+      "label": "非对称小差 + power 0.85: 对照0.65, 试验0.68, delta=0.10, alpha=0.025, ratio=1",
+      "inputs": { "p1": 0.65, "p2": 0.68, "delta": 0.1, "alpha": 0.025, "power": 0.85, "ratio": 1 },
+      "golden": { "source": "TrialSize::TwoSampleProportion.NIS", "method": "Chow et al. (2017) NI 两组比例, unpooled 正态近似", "r_call": "TwoSampleProportion.NIS(alpha=0.025, beta=0.15, p1=0.68, p2=0.65, k=1, delta=0.03, margin=-0.1)  # p1=试验组, p2=对照组; 返回=试验组连续n, 对照组=返回/k", "n1_control": 236.466545, "n2_treatment": 236.466545, "n1_control_ceil": 237, "n2_treatment_ceil": 237 },
+      "fm_reference": null,
+      "known_deviation": false,
+      "known_deviation_note": null
+    },
+    {
+      "id": "ni-14-small-n",
+      "label": "小样本边界 (宽界值+差异): 对照0.50, 试验0.55, delta=0.20, alpha=0.05, power=0.80, ratio=1",
+      "inputs": { "p1": 0.5, "p2": 0.55, "delta": 0.2, "alpha": 0.05, "power": 0.8, "ratio": 1 },
+      "golden": { "source": "TrialSize::TwoSampleProportion.NIS", "method": "Chow et al. (2017) NI 两组比例, unpooled 正态近似", "r_call": "TwoSampleProportion.NIS(alpha=0.05, beta=0.2, p1=0.55, p2=0.5, k=1, delta=0.05, margin=-0.2)  # p1=试验组, p2=对照组; 返回=试验组连续n, 对照组=返回/k", "n1_control": 49.213156, "n2_treatment": 49.213156, "n1_control_ceil": 50, "n2_treatment_ceil": 50 },
+      "fm_reference": null,
+      "known_deviation": false,
+      "known_deviation_note": null
+    }
+  ]
+}
+
