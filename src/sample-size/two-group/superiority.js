@@ -29,6 +29,7 @@
 
 import { safeNumber, safeDivide } from '../../core/safe-math.js'
 import { normalInverse } from '../../core/normal-distribution.js'
+import { validateStatParams } from '../../core/param-validator.js'
 
 /**
  * 优效试验样本量计算 - 率终点
@@ -51,6 +52,11 @@ import { normalInverse } from '../../core/normal-distribution.js'
  * @returns {{n1: number, n2: number}} 各组样本量
  */
 function calculateSupSampleSize(p1, p2, alpha, power, ratio) {
+  // 统一参数验证（W8）：类型无效 / 数学域外（含 ratio≤0 slip-through）→ 拒绝计算
+  if (!validateStatParams({ p1, p2, alpha, power, ratio }).valid) {
+    return { n1: NaN, n2: NaN }
+  }
+
   // 输入清洗
   p1 = safeNumber(p1, 0)
   p2 = safeNumber(p2, 0)
@@ -114,6 +120,11 @@ function calculateSupSampleSize(p1, p2, alpha, power, ratio) {
  * @returns {{n1: number, n2: number}} 各组样本量
  */
 function calculateSupSampleSizeContinuous(sigma, meanDiff, alpha, power, ratio) {
+  // 统一参数验证（W8）：类型无效 / 数学域外（含 sigma≤0、ratio≤0 slip-through）→ 拒绝计算
+  if (!validateStatParams({ sigma, alpha, power, ratio }).valid) {
+    return { n1: NaN, n2: NaN }
+  }
+
   sigma = safeNumber(sigma, 1)
   meanDiff = safeNumber(meanDiff, 0)
   alpha = safeNumber(alpha, 0)

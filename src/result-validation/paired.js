@@ -7,6 +7,7 @@
 
 import { safeDivide } from '../core/safe-math.js'
 import { normalCDF, normalInverse } from '../core/normal-distribution.js'
+import { validateStatParams } from '../core/param-validator.js'
 
 // ========================================================
 // 配对设计 - 率终点 (Paired Design - Proportion, McNemar Test)
@@ -32,6 +33,18 @@ function calculatePairedResult(
 ) {
   const n_total = n10 + n01
   if (n_total === 0) {
+    return {
+      diff: 0,
+      ci_lower: 0,
+      ci_upper: 0,
+      p_value: 1,
+      isNonInferior: false
+    }
+  }
+
+  // 统一参数验证（W8）：alpha 类型无效 / 数学域外 → 拒绝计算（沿用 n_total=0 fallback 形态）
+  // n10/n01 为不一致对例数（可为 0）；delta 无域约束，均不参与校验
+  if (!validateStatParams({ alpha }).valid) {
     return {
       diff: 0,
       ci_lower: 0,
@@ -122,7 +135,8 @@ function calculatePairedResultContinuous(
   const se = sd_diff / Math.sqrt(n)
   const z_alpha = normalInverse(1 - alpha)
 
-  if (!isFinite(z_alpha)) {
+  // 统一参数验证（W8）：alpha 数学域外与 z 不可算同判（belt-and-suspenders，行为等价，沿用既有 fallback 形态）
+  if (!validateStatParams({ alpha }).valid || !isFinite(z_alpha)) {
     return {
       diff: mean_diff,
       ci_lower: mean_diff,

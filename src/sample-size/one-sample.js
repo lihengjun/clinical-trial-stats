@@ -7,6 +7,7 @@
 
 import { safeNumber, safeDivide } from '../core/safe-math.js'
 import { normalInverse } from '../core/normal-distribution.js'
+import { validateStatParams } from '../core/param-validator.js'
 
 // ========================================================
 // 单组试验 (Single-Arm Trial / One-Sample Test)
@@ -22,6 +23,11 @@ import { normalInverse } from '../core/normal-distribution.js'
  * @returns {object} - {n1: 样本量, n2: 0}（单组试验无对照组 n2）
  */
 function calculateOneSampleSize(p0, p1, alpha, power) {
+  // 统一参数验证（W8）：类型无效 / 数学域外 → 拒绝计算
+  if (!validateStatParams({ p0, p1, alpha, power }).valid) {
+    return { n1: NaN, n2: NaN }
+  }
+
   p0 = safeNumber(p0, 0)
   p1 = safeNumber(p1, 0)
   alpha = safeNumber(alpha, 0)
@@ -71,6 +77,12 @@ function calculateOneSampleSize(p0, p1, alpha, power) {
  * @returns {object} - {n1: 样本量, n2: 0}（单组试验无对照组 n2）
  */
 function calculateOneSampleSizeContinuous(mu0, mu1, sigma, alpha, power) {
+  // 统一参数验证（W8）：类型无效 / 数学域外（含 sigma≤0）→ 拒绝计算
+  // mu0 / mu1 无域约束（任意实数），不参与校验
+  if (!validateStatParams({ sigma, alpha, power }).valid) {
+    return { n1: NaN, n2: NaN }
+  }
+
   mu0 = safeNumber(mu0, 0)
   mu1 = safeNumber(mu1, 0)
   sigma = safeNumber(sigma, 1)

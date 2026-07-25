@@ -224,15 +224,16 @@ describe('two-group sample size', () => {
   // 边界条件和错误处理
   // ========================================================
   describe('Edge cases and error handling', () => {
-    it('应处理无效输入', () => {
-      // NaN 输入被 safeNumber 转换为 0，仍可计算
-      // p1=0, p2=0.7, delta=0.1 -> effectSize = 0.7 - 0 + 0.1 = 0.8
+    it('应拒绝无效输入（W8 验证器翻转）', () => {
+      // W8 验证器：无效输入拒绝，原 safeNumber 强转 0 属静默算错
+      // p1=NaN 不再被 safeNumber(NaN,0) 兜底为合法概率，而是判为类型无效 → 拒绝计算
       const result1 = calculateNISampleSize(NaN, 0.7, 0.1, 0.025, 0.8, 1)
-      expect(result1.n1).toBeGreaterThan(0) // 可以计算出结果
+      expect(result1.n1).toBeNaN()
 
-      // undefined 输入 (被 safeNumber 转换为 0)
+      // W8 验证器：无效输入拒绝，原 safeNumber 强转 0 属静默算错
+      // p1=undefined 判为类型无效 → 拒绝计算（原锁定"强转 0 仍算出正数"属静默算错）
       const result = calculateSupSampleSize(undefined, 0.7, 0.025, 0.8, 1)
-      expect(result.n1).toBeGreaterThan(0) // 应该能计算，因为 0.7 - 0 = 0.7 != 0
+      expect(result.n1).toBeNaN()
     })
 
     it('应正确向上取整', () => {
@@ -282,6 +283,50 @@ describe('two-group sample size', () => {
       const resultLoose = calculateNISampleSize(0.7, 0.7, 0.1, 0.025, 0.8, 1) // 10% 界值
 
       expect(resultLoose.n1).toBeLessThan(resultStrict.n1)
+    })
+  })
+
+  // ========================================================
+  // W8 统一参数验证器 - 除零 slip-through 闭合（CTS-12）
+  // 修复前：ratio≤0 / sigma≤0 被 safeDivide/pow 静默吞掉，返回貌似合理的错值（非 NaN）；
+  // 修复后：入口 validateStatParams 判定数学域外 → 拒绝计算 → NaN。
+  // 期望值对照取自侦察卡 cardB_divzero_slipthrough 的 runtime 实证。
+  // ========================================================
+  describe('W8 slip-through 闭合（ratio≤0 / sigma≤0 → NaN）', () => {
+    it('ratio=0（率）：修复前 {n1:56,n2:0} → 修复后 NaN', () => {
+      const r = calculateNISampleSize(0.8, 0.85, 0.1, 0.025, 0.8, 0)
+      expect(r.n1).toBeNaN()
+      expect(r.n2).toBeNaN()
+    })
+
+    it('ratio<0（率）：修复前 {n1:12,n2:-12}（负样本量）→ 修复后 NaN', () => {
+      const r = calculateNISampleSize(0.8, 0.85, 0.1, 0.025, 0.8, -1)
+      expect(r.n1).toBeNaN()
+      expect(r.n2).toBeNaN()
+    })
+
+    it('sigma=0（连续）：修复前 {n1:0,n2:0} → 修复后 NaN', () => {
+      const r = calculateNISampleSizeContinuous(0, 5, 0.025, 0.8, 1, 0)
+      expect(r.n1).toBeNaN()
+      expect(r.n2).toBeNaN()
+    })
+
+    it('sigma<0（连续）：修复前 {n1:1,n2:1}（负方差被 pow 掩盖）→ 修复后 NaN', () => {
+      const r = calculateNISampleSizeContinuous(-1, 5, 0.025, 0.8, 1, 0)
+      expect(r.n1).toBeNaN()
+      expect(r.n2).toBeNaN()
+    })
+
+    it('ratio=0（优效）：修复前 {n1:503,n2:0} → 修复后 NaN（同源闭合验证）', () => {
+      const r = calculateSupSampleSize(0.8, 0.85, 0.025, 0.8, 0)
+      expect(r.n1).toBeNaN()
+      expect(r.n2).toBeNaN()
+    })
+
+    it('sigma=0（优效连续）+ ratio<0（等效）同族闭合', () => {
+      expect(calculateSupSampleSizeContinuous(0, 5, 0.025, 0.8, 1).n1).toBeNaN()
+      expect(calculateEqSampleSize(0.5, 0.5, 0.1, 0.05, 0.8, -1).n1).toBeNaN()
+      expect(calculateEqSampleSizeContinuous(8, 5, 0.05, 0.8, 0, 0).n1).toBeNaN()
     })
   })
 })

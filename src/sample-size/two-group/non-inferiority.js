@@ -29,6 +29,7 @@
 
 import { safeNumber, safeDivide } from '../../core/safe-math.js'
 import { normalInverse } from '../../core/normal-distribution.js'
+import { validateStatParams } from '../../core/param-validator.js'
 
 /**
  * 非劣效试验样本量计算 - 率终点
@@ -52,6 +53,12 @@ import { normalInverse } from '../../core/normal-distribution.js'
  * @returns {{n1: number, n2: number}} 各组样本量
  */
 function calculateNISampleSize(p1, p2, delta, alpha, power, ratio) {
+  // 统一参数验证（W8）：类型无效 / 数学域外（含 ratio≤0 slip-through）→ 拒绝计算
+  // delta 无域约束（非劣效界值可为负），不参与校验
+  if (!validateStatParams({ p1, p2, alpha, power, ratio }).valid) {
+    return { n1: NaN, n2: NaN }
+  }
+
   // 输入清洗 - 确保所有参数都是有效数字
   p1 = safeNumber(p1, 0)
   p2 = safeNumber(p2, 0)
@@ -116,6 +123,12 @@ function calculateNISampleSize(p1, p2, delta, alpha, power, ratio) {
  * @returns {{n1: number, n2: number}} 各组样本量
  */
 function calculateNISampleSizeContinuous(sigma, delta, alpha, power, ratio, meanDiff) {
+  // 统一参数验证（W8）：类型无效 / 数学域外（含 sigma≤0、ratio≤0 slip-through）→ 拒绝计算
+  // delta / meanDiff 无域约束，不参与校验
+  if (!validateStatParams({ sigma, alpha, power, ratio }).valid) {
+    return { n1: NaN, n2: NaN }
+  }
+
   // 输入清洗
   sigma = safeNumber(sigma, 1)
   delta = safeNumber(delta, 0)

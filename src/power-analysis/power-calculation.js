@@ -50,6 +50,7 @@
 
 import { safeNumber, safeDivide } from '../core/safe-math.js'
 import { normalCDF, normalInverse } from '../core/normal-distribution.js'
+import { validateStatParams } from '../core/param-validator.js'
 
 // ========================================================
 // 两组比较 - 效能反推
@@ -73,6 +74,11 @@ import { normalCDF, normalInverse } from '../core/normal-distribution.js'
  * @returns {{ power: number, z_beta: number }} 检验效能和 Z_β 值
  */
 function calculatePowerNI(n1, p1, p2, delta, alpha, ratio) {
+  // 统一参数验证（W8）：类型无效 / 数学域外 → 拒绝计算
+  if (!validateStatParams({ n1, p1, p2, alpha, ratio }).valid) {
+    return { power: NaN, z_beta: NaN }
+  }
+
   n1 = safeNumber(n1, 0)
   p1 = safeNumber(p1, 0)
   p2 = safeNumber(p2, 0)
@@ -125,6 +131,11 @@ function calculatePowerNI(n1, p1, p2, delta, alpha, ratio) {
  * @returns {{ power: number, z_beta: number }} 检验效能和 Z_β 值
  */
 function calculatePowerSup(n1, p1, p2, alpha, ratio) {
+  // 统一参数验证（W8）：类型无效 / 数学域外 → 拒绝计算
+  if (!validateStatParams({ n1, p1, p2, alpha, ratio }).valid) {
+    return { power: NaN, z_beta: NaN }
+  }
+
   n1 = safeNumber(n1, 0)
   p1 = safeNumber(p1, 0)
   p2 = safeNumber(p2, 0)
@@ -188,6 +199,11 @@ function calculatePowerSup(n1, p1, p2, alpha, ratio) {
  * @returns {{ power: number, z_beta: number }} 检验效能和 Z_β 值（Z_β 为较弱一侧）
  */
 function calculatePowerEq(n1, p1, p2, delta, alpha, ratio) {
+  // 统一参数验证（W8）：类型无效 / 数学域外 → 拒绝计算
+  if (!validateStatParams({ n1, p1, p2, alpha, ratio }).valid) {
+    return { power: NaN, z_beta: NaN }
+  }
+
   n1 = safeNumber(n1, 0)
   p1 = safeNumber(p1, 0)
   p2 = safeNumber(p2, 0)
@@ -257,6 +273,11 @@ function calculatePowerEq(n1, p1, p2, delta, alpha, ratio) {
  * @returns {{ power: number, z_beta: number }} 检验效能和 Z_β 值
  */
 function calculatePowerNIContinuous(n1, sigma, delta, alpha, ratio, meanDiff) {
+  // 统一参数验证（W8）：类型无效 / 数学域外（含 sigma≤0、ratio≤0）→ 拒绝计算
+  if (!validateStatParams({ n1, sigma, alpha, ratio }).valid) {
+    return { power: NaN, z_beta: NaN }
+  }
+
   n1 = safeNumber(n1, 0)
   sigma = safeNumber(sigma, 1)
   delta = safeNumber(delta, 0)
@@ -304,6 +325,11 @@ function calculatePowerNIContinuous(n1, sigma, delta, alpha, ratio, meanDiff) {
  * @returns {{ power: number, z_beta: number }} 检验效能和 Z_β 值
  */
 function calculatePowerSupContinuous(n1, sigma, meanDiff, alpha, ratio) {
+  // 统一参数验证（W8）：类型无效 / 数学域外（含 sigma≤0、ratio≤0）→ 拒绝计算
+  if (!validateStatParams({ n1, sigma, alpha, ratio }).valid) {
+    return { power: NaN, z_beta: NaN }
+  }
+
   n1 = safeNumber(n1, 0)
   sigma = safeNumber(sigma, 1)
   meanDiff = safeNumber(meanDiff, 0)
@@ -347,6 +373,11 @@ function calculatePowerSupContinuous(n1, sigma, meanDiff, alpha, ratio) {
  * @returns {{ power: number, z_beta: number }} 检验效能和 Z_β 值
  */
 function calculatePowerEqContinuous(n1, sigma, delta, alpha, ratio, meanDiff) {
+  // 统一参数验证（W8）：类型无效 / 数学域外（含 sigma≤0、ratio≤0）→ 拒绝计算
+  if (!validateStatParams({ n1, sigma, alpha, ratio }).valid) {
+    return { power: NaN, z_beta: NaN }
+  }
+
   n1 = safeNumber(n1, 0)
   sigma = safeNumber(sigma, 1)
   delta = safeNumber(delta, 0)
@@ -414,6 +445,11 @@ function calculatePowerEqContinuous(n1, sigma, delta, alpha, ratio, meanDiff) {
  * @returns {{ power: number, z_beta: number }} 检验效能和 Z_β 值
  */
 function calculatePowerOneSample(n, p0, p1, alpha) {
+  // 统一参数验证（W8）：类型无效 / 数学域外 → 拒绝计算
+  if (!validateStatParams({ n, p0, p1, alpha }).valid) {
+    return { power: NaN, z_beta: NaN }
+  }
+
   n = safeNumber(n, 0)
   p0 = safeNumber(p0, 0)
   p1 = safeNumber(p1, 0)
@@ -495,6 +531,11 @@ function calculatePowerOneSample(n, p0, p1, alpha) {
  * @returns {{ power: number, z_beta: number }} 检验效能和 Z_β 值
  */
 function calculatePowerOneSampleContinuous(n, mu0, mu1, sigma, alpha) {
+  // 统一参数验证（W8）：类型无效 / 数学域外（含 sigma≤0）→ 拒绝计算
+  if (!validateStatParams({ n, sigma, alpha }).valid) {
+    return { power: NaN, z_beta: NaN }
+  }
+
   n = safeNumber(n, 0)
   mu0 = safeNumber(mu0, 0)
   mu1 = safeNumber(mu1, 0)
@@ -549,6 +590,18 @@ function calculatePowerOneSampleContinuous(n, mu0, mu1, sigma, alpha) {
  * @returns {{ power: number, z_beta: number }} 检验效能和 Z_β 值
  */
 function calculatePowerPaired(n, p10, p01, delta, alpha, studyType = 'non-inferiority') {
+  // 统一参数验证（W8）：n/alpha 类型无效 / 数学域外 → 拒绝计算
+  // p10/p01 为不一致对比例（可为 0），保留下方专用 guard
+  if (!validateStatParams({ n, alpha }).valid) {
+    return { power: NaN, z_beta: NaN }
+  }
+
+  // W8CR：p10/p01 类型无效（NaN/undefined/非有限）须在 safeNumber 之前拒绝 ——
+  // 否则被 safeNumber(…,0) 洗成 0，下方 `p10<0` guard 放行，函数返回假合法 power。
+  if (!Number.isFinite(p10) || !Number.isFinite(p01)) {
+    return { power: NaN, z_beta: NaN }
+  }
+
   n = safeNumber(n, 0)
   p10 = safeNumber(p10, 0)
   p01 = safeNumber(p01, 0)
@@ -627,6 +680,17 @@ function calculatePowerPairedContinuous(
   alpha,
   studyType = 'non-inferiority'
 ) {
+  // 统一参数验证（W8）：n/alpha 类型无效 / 数学域外 → 拒绝计算（sigma_diff≤0 由下方专用 guard 处理）
+  if (!validateStatParams({ n, alpha }).valid) {
+    return { power: NaN, z_beta: NaN }
+  }
+
+  // W8CR：sigma_diff 类型无效（NaN/undefined/非有限）须在 safeNumber 之前拒绝 ——
+  // 否则被 safeNumber(…,1) 洗成 1，下方 `sigma_diff<=0` guard 放行，函数按 σ=1 返回假合法 power。
+  if (!Number.isFinite(sigma_diff)) {
+    return { power: NaN, z_beta: NaN }
+  }
+
   n = safeNumber(n, 0)
   sigma_diff = safeNumber(sigma_diff, 1)
   mean_diff = safeNumber(mean_diff, 0)

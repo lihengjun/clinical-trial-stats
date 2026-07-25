@@ -8,6 +8,7 @@
 import { safeNumber, safeDivide } from '../core/safe-math.js'
 import { normalCDF, normalInverse } from '../core/normal-distribution.js'
 import { calculateWilsonCI } from '../core/confidence-interval.js'
+import { validateStatParams } from '../core/param-validator.js'
 
 // ========================================================
 // Farrington-Manning 方法辅助函数
@@ -403,7 +404,8 @@ function calculateNIResult(n1, s1, n2, s2, delta, alpha, useContinuity, method) 
   const diff = p2 - p1
   const z_alpha = normalInverse(1 - alpha)
 
-  if (!isFinite(z_alpha)) {
+  // 统一参数验证（W8）：alpha 数学域外与 z 不可算同判（belt-and-suspenders，行为等价，沿用既有 fallback 形态）
+  if (!validateStatParams({ alpha }).valid || !isFinite(z_alpha)) {
     return {
       p1: 0,
       p2: 0,
@@ -555,7 +557,8 @@ function calculateNIResultContinuous(n1, mean1, sd1, n2, mean2, sd2, delta, alph
   // 使用正态近似（大样本）或t分布
   // 大样本时z和t接近，这里用z简化
   const z_alpha = normalInverse(1 - alpha)
-  if (!isFinite(z_alpha)) {
+  // 统一参数验证（W8）：alpha 数学域外与 z 不可算同判（belt-and-suspenders，行为等价，沿用既有 fallback 形态）
+  if (!validateStatParams({ alpha }).valid || !isFinite(z_alpha)) {
     return {
       mean1,
       mean2,
@@ -631,7 +634,8 @@ function calculateSupResult(n1, s1, n2, s2, alpha, useContinuity, method) {
   const diff = p2 - p1
   const z_alpha = normalInverse(1 - alpha)
 
-  if (!isFinite(z_alpha)) {
+  // 统一参数验证（W8）：alpha 数学域外与 z 不可算同判（belt-and-suspenders，行为等价，沿用既有 fallback 形态）
+  if (!validateStatParams({ alpha }).valid || !isFinite(z_alpha)) {
     return {
       p1: 0,
       p2: 0,
@@ -763,7 +767,8 @@ function calculateSupResultContinuous(n1, mean1, sd1, n2, mean2, sd2, alpha) {
   }
 
   const z_alpha = normalInverse(1 - alpha)
-  if (!isFinite(z_alpha)) {
+  // 统一参数验证（W8）：alpha 数学域外与 z 不可算同判（belt-and-suspenders，行为等价，沿用既有 fallback 形态）
+  if (!validateStatParams({ alpha }).valid || !isFinite(z_alpha)) {
     return {
       mean1,
       mean2,
@@ -844,7 +849,8 @@ function calculateEqResult(n1, s1, n2, s2, delta, alpha, useContinuity, method) 
   // - z值: Φ⁻¹(1 - alpha)
   const z_alpha = normalInverse(1 - alpha)
 
-  if (!isFinite(z_alpha)) {
+  // 统一参数验证（W8）：alpha 数学域外与 z 不可算同判（belt-and-suspenders，行为等价，沿用既有 fallback 形态）
+  if (!validateStatParams({ alpha }).valid || !isFinite(z_alpha)) {
     return {
       p1: 0,
       p2: 0,
@@ -981,7 +987,8 @@ function calculateEqResultContinuous(n1, mean1, sd1, n2, mean2, sd2, delta, alph
   // - 置信区间: (1-2·alpha)×100% CI (如 α=0.025 对应 95% CI)
   // - z值: Φ⁻¹(1 - alpha)
   const z_alpha = normalInverse(1 - alpha)
-  if (!isFinite(z_alpha)) {
+  // 统一参数验证（W8）：alpha 数学域外与 z 不可算同判（belt-and-suspenders，行为等价，沿用既有 fallback 形态）
+  if (!validateStatParams({ alpha }).valid || !isFinite(z_alpha)) {
     return {
       mean1,
       mean2,

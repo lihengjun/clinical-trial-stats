@@ -7,6 +7,7 @@
 
 import { safeNumber, safeDivide } from '../core/safe-math.js'
 import { normalCDF, normalInverse } from '../core/normal-distribution.js'
+import { validateStatParams } from '../core/param-validator.js'
 
 // ========================================================
 // 多组比较 (Multigroup Comparison)
@@ -36,6 +37,11 @@ function calculateMultigroupResult(
   allocations = null,
   strategy = 'any'
 ) {
+  // 统一参数验证（W8CR）：validate 消费**原始 alpha**，须在任何 safeNumber 兜底之前执行 ——
+  // 否则 alpha 类型无效（NaN/undefined）被 safeNumber(…,0.025) 洗成合法默认值后 validator 判 valid，
+  // 函数按 α=0.025 静默算出假合法的 overall_success/CI。
+  const alphaValid = validateStatParams({ alpha }).valid
+
   // 安全转换
   n0 = safeNumber(n0, 1)
   x0 = safeNumber(x0, 0)
@@ -46,7 +52,8 @@ function calculateMultigroupResult(
   const alpha_adjusted = strategy === 'all' ? alpha : alpha / k
   const z_alpha = normalInverse(1 - alpha_adjusted)
 
-  if (!isFinite(z_alpha)) {
+  // alpha 类型无效 / 数学域外与 z 不可算同判；alphaValid 已在 safeNumber 之前对原始入参求值
+  if (!alphaValid || !isFinite(z_alpha)) {
     return { results: [], overall_success: false, alpha_adjusted, k }
   }
 
@@ -168,6 +175,11 @@ function calculateMultigroupResultContinuous(
   allocations = null,
   strategy = 'any'
 ) {
+  // 统一参数验证（W8CR）：validate 消费**原始 alpha**，须在任何 safeNumber 兜底之前执行 ——
+  // 否则 alpha 类型无效（NaN/undefined）被 safeNumber(…,0.025) 洗成合法默认值后 validator 判 valid，
+  // 函数按 α=0.025 静默算出假合法的 overall_success/CI。
+  const alphaValid = validateStatParams({ alpha }).valid
+
   // 安全转换
   n0 = safeNumber(n0, 1)
   mean0 = safeNumber(mean0, 0)
@@ -179,7 +191,8 @@ function calculateMultigroupResultContinuous(
   const alpha_adjusted = strategy === 'all' ? alpha : alpha / k
   const z_alpha = normalInverse(1 - alpha_adjusted)
 
-  if (!isFinite(z_alpha)) {
+  // alpha 类型无效 / 数学域外与 z 不可算同判；alphaValid 已在 safeNumber 之前对原始入参求值
+  if (!alphaValid || !isFinite(z_alpha)) {
     return { results: [], overall_success: false, alpha_adjusted, k }
   }
 

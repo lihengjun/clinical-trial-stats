@@ -19,6 +19,7 @@
 import { normalCDF, normalInverse } from './core/normal-distribution.js'
 import { safeNumber, safeDivide } from './core/safe-math.js'
 import { calculateWilsonCI } from './core/confidence-interval.js'
+import { validateStatParams } from './core/param-validator.js'
 
 // ========================================================
 // Sample Size Modules - 样本量计算模块
@@ -153,6 +154,9 @@ export {
   // 通用函数 (Universal)
   normalCDF,
   normalInverse,
+
+  // 统一参数验证器 (Statistical Parameter Validator - W8/P0)
+  validateStatParams,
 
   // 非劣效试验 - 率终点 (Non-Inferiority - Proportion)
   calculateNISampleSize,

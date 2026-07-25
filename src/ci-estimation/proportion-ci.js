@@ -7,6 +7,7 @@
 
 import { safeDivide } from '../core/safe-math.js'
 import { normalInverse } from '../core/normal-distribution.js'
+import { validateStatParams } from '../core/param-validator.js'
 
 // ========================================================
 // 率置信区间估计 (Rate Confidence Interval Estimation)
@@ -23,6 +24,11 @@ import { normalInverse } from '../core/normal-distribution.js'
 function calculateRateCISampleSize(p, width, confidenceLevel) {
   // 参数无效时返回NaN，表示未定义
   if (p <= 0 || p >= 1 || width <= 0 || width >= 1) {
+    return { n: NaN }
+  }
+
+  // 统一参数验证（W8）：confidenceLevel 类型无效 / 数学域外 (0,1) → 拒绝计算
+  if (!validateStatParams({ confidenceLevel }).valid) {
     return { n: NaN }
   }
 
@@ -64,7 +70,8 @@ function calculateRateCI(n, x, confidenceLevel) {
   const alpha = 1 - confidenceLevel
   const z = normalInverse(1 - alpha / 2)
 
-  if (!isFinite(z)) {
+  // 统一参数验证（W8）：confidenceLevel 数学域外与 z 不可算同判（沿用既有 fallback 形态）
+  if (!validateStatParams({ confidenceLevel }).valid || !isFinite(z)) {
     return { p, ci_lower: 0, ci_upper: 1, width: 1 }
   }
 

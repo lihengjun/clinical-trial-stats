@@ -6,6 +6,7 @@
  */
 
 import { normalInverse } from '../core/normal-distribution.js'
+import { validateStatParams } from '../core/param-validator.js'
 
 // ========================================================
 // 配对设计 - 率终点 (Paired Design - Proportion, McNemar Test)
@@ -23,7 +24,15 @@ import { normalInverse } from '../core/normal-distribution.js'
  */
 function calculatePairedSampleSize(p10, p01, delta, alpha, power, studyType = 'non-inferiority') {
   // 参数无效时返回 NaN（未定义）
-  if (p10 < 0 || p01 < 0 || p10 + p01 > 1) {
+  // W8CR：p10/p01 为 McNemar 不一致对比例（可为 0），不进共享 validator；此处须先挡类型无效
+  // （NaN/undefined/非有限），否则 `p10<0` 对 NaN 恒 false 放行，末尾 `!isFinite(n_raw)` 误判为 Infinity。
+  if (!Number.isFinite(p10) || !Number.isFinite(p01) || p10 < 0 || p01 < 0 || p10 + p01 > 1) {
+    return { n: NaN }
+  }
+
+  // 统一参数验证（W8）：alpha/power 类型无效 / 数学域外 → 拒绝计算
+  // p10/p01 为不一致对比例（可为 0），保留上方专用 guard；delta 无域约束
+  if (!validateStatParams({ alpha, power }).valid) {
     return { n: NaN }
   }
 
@@ -98,7 +107,14 @@ function calculatePairedSampleSizeContinuous(
   studyType = 'non-inferiority'
 ) {
   // 标准差无效时返回 NaN（未定义）
-  if (sigma_diff <= 0) {
+  // W8CR：sigma_diff 不进共享 validator（键名不在 POSITIVE_PARAMS）；此处须先挡类型无效
+  // （NaN/undefined/非有限），否则 `sigma_diff<=0` 对 NaN 恒 false 放行，末尾 `!isFinite(n_raw)` 误判为 Infinity。
+  if (!Number.isFinite(sigma_diff) || sigma_diff <= 0) {
+    return { n: NaN }
+  }
+
+  // 统一参数验证（W8）：alpha/power 类型无效 / 数学域外 → 拒绝计算
+  if (!validateStatParams({ alpha, power }).valid) {
     return { n: NaN }
   }
 

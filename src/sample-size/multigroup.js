@@ -7,6 +7,7 @@
 
 import { safeNumber, safeDivide } from '../core/safe-math.js'
 import { normalInverse } from '../core/normal-distribution.js'
+import { validateStatParams } from '../core/param-validator.js'
 
 // ========================================================
 // 多组比较 (Multigroup Comparison)
@@ -36,7 +37,12 @@ function calculateMultigroupSampleSize(
   allocations = null,
   strategy = 'any'
 ) {
-  // 安全转换
+  // 统一参数验证（W8CR）：validate 消费**原始入参**，须在任何 safeNumber 兜底之前执行 ——
+  // 否则类型无效（NaN/undefined）被 safeNumber 洗成合法默认值（0.5/0.025/0.8）后 validator 判 valid，
+  // 函数返回假合法样本量。p_groups 为数组、delta 无域约束，均不参与此校验。
+  const validation = validateStatParams({ p0, alpha, power })
+
+  // 安全转换（数值清洗；validate 已挡住无效输入，默认值不再承担"无效输入兜底"职责）
   p0 = safeNumber(p0, 0.5)
   delta = safeNumber(delta, 0.1)
   alpha = safeNumber(alpha, 0.025)
@@ -55,8 +61,8 @@ function calculateMultigroupSampleSize(
   const z_alpha = normalInverse(1 - alpha_adjusted)
   const z_beta = normalInverse(power)
 
-  // 检查z值是否有效（alpha=0 或 power=100% 时无效）
-  if (!isFinite(z_alpha) || !isFinite(z_beta)) {
+  // 类型无效 / 数学域外 → 拒绝计算（与 z 无效同一 NaN 形态）；validation 已在 safeNumber 之前对原始入参求值
+  if (!validation.valid || !isFinite(z_alpha) || !isFinite(z_beta)) {
     const n_per_group_array = allocations.map(() => NaN)
     return {
       base_n: NaN,
@@ -191,7 +197,12 @@ function calculateMultigroupSampleSizeContinuous(
   allocations = null,
   strategy = 'any'
 ) {
-  // 安全转换
+  // 统一参数验证（W8CR）：validate 消费**原始入参**，须在任何 safeNumber 兜底之前执行 ——
+  // 否则 sd/alpha/power 类型无效被 safeNumber 洗成合法默认值（1/0.025/0.8）后 validator 判 valid，
+  // 函数返回假合法样本量。mean0/mean_groups/delta 无域约束，均不参与此校验。
+  const validation = validateStatParams({ sd, alpha, power })
+
+  // 安全转换（数值清洗；validate 已挡住无效输入，默认值不再承担"无效输入兜底"职责）
   mean0 = safeNumber(mean0, 0)
   sd = safeNumber(sd, 1)
   delta = safeNumber(delta, 0)
@@ -211,8 +222,8 @@ function calculateMultigroupSampleSizeContinuous(
   const z_alpha = normalInverse(1 - alpha_adjusted)
   const z_beta = normalInverse(power)
 
-  // 检查z值是否有效（alpha=0 或 power=100% 时无效）
-  if (!isFinite(z_alpha) || !isFinite(z_beta)) {
+  // 类型无效 / 数学域外（含 sd≤0）→ 拒绝计算（与 z 无效同一 NaN 形态）；validation 已在 safeNumber 之前对原始入参求值
+  if (!validation.valid || !isFinite(z_alpha) || !isFinite(z_beta)) {
     const n_per_group_array = allocations.map(() => NaN)
     return {
       base_n: NaN,

@@ -6,6 +6,7 @@
  */
 
 import { normalInverse } from '../core/normal-distribution.js'
+import { validateStatParams } from '../core/param-validator.js'
 
 // ========================================================
 // 均值置信区间估计 (Mean Confidence Interval Estimation)
@@ -21,6 +22,11 @@ import { normalInverse } from '../core/normal-distribution.js'
 function calculateMeanCISampleSize(sigma, width, confidenceLevel) {
   // 参数无效时返回NaN，表示未定义
   if (sigma <= 0 || width <= 0) {
+    return { n: NaN }
+  }
+
+  // 统一参数验证（W8）：confidenceLevel 类型无效 / 数学域外 (0,1) → 拒绝计算
+  if (!validateStatParams({ confidenceLevel }).valid) {
     return { n: NaN }
   }
 
@@ -62,7 +68,8 @@ function calculateMeanCI(n, mean, sd, confidenceLevel) {
   // 双侧置信水平换算为正态分位数：alpha = 1 - confidenceLevel，Z 取 Z_{1-α/2}
   const alpha = 1 - confidenceLevel
   const z = normalInverse(1 - alpha / 2)
-  if (!isFinite(z)) {
+  // 统一参数验证（W8）：confidenceLevel 数学域外与 z 不可算同判（沿用既有 fallback 形态）
+  if (!validateStatParams({ confidenceLevel }).valid || !isFinite(z)) {
     return { mean, ci_lower: mean, ci_upper: mean, width: 0 }
   }
 

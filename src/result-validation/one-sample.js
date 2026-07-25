@@ -7,6 +7,7 @@
 
 import { safeNumber, safeDivide } from '../core/safe-math.js'
 import { normalCDF, normalInverse } from '../core/normal-distribution.js'
+import { validateStatParams } from '../core/param-validator.js'
 
 // ========================================================
 // 单组试验 (Single-Arm Trial / One-Sample Test)
@@ -40,7 +41,8 @@ function calculateOneSampleResult(n, s, p0, alpha, useContinuity) {
   const diff = p - p0
   const z_alpha = normalInverse(1 - alpha)
 
-  if (!isFinite(z_alpha)) {
+  // 统一参数验证（W8）：alpha 数学域外与 z 不可算同判（belt-and-suspenders，行为等价，沿用既有 fallback 形态）
+  if (!validateStatParams({ alpha }).valid || !isFinite(z_alpha)) {
     return {
       p,
       p0,
@@ -127,7 +129,8 @@ function calculateOneSampleResultContinuous(n, mean, sd, mu0, alpha) {
   }
 
   const z_alpha = normalInverse(1 - alpha)
-  if (!isFinite(z_alpha)) {
+  // 统一参数验证（W8）：alpha 数学域外与 z 不可算同判（belt-and-suspenders，行为等价，沿用既有 fallback 形态）
+  if (!validateStatParams({ alpha }).valid || !isFinite(z_alpha)) {
     return {
       mean,
       mu0,
